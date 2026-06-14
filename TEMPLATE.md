@@ -58,10 +58,19 @@ O brain **e o motor** vêm vendorizados (funcionam out-of-the-box); o **plugin**
   ```
   Depois capture as decisões do **seu** projeto via `/capture`.
 
-## Publicar o template (pra qualquer um instalar por nome)
+## Publicar o template (instalação por nome)
+**Automático, sem API key:** crie um **Release no GitHub** (tag tipo `v1.0.0`) → o workflow
+`.github/workflows/release.yml` empacota e publica no **GitHub Packages** usando o `GITHUB_TOKEN`
+(não precisa de key nenhuma sua).
+
+Para instalar de outra máquina (GitHub Packages pede autenticar a feed uma vez):
 ```sh
-dotnet pack Template.Pack.csproj -c Release -o ./nupkg
-dotnet nuget push ./nupkg/*.nupkg --api-key <SUA_KEY> --source https://api.nuget.org/v3/index.json
-# depois, qualquer um:  dotnet new install D365CE.VerticalSlice.Template
+dotnet nuget add source https://nuget.pkg.github.com/Ferraz2000/index.json \
+  -n github -u <seu-usuario-github> -p <PAT-com-read:packages> --store-password-in-clear-text
+dotnet new install D365CE.VerticalSlice.Template
 ```
-Ou, sem NuGet: marque o repo como **GitHub Template** (Settings → Template repository).
+
+**Opcional — nuget.org** (instalação pública, sem autenticar): crie a secret `NUGET_API_KEY` no repo;
+o mesmo release passa a publicar lá também (o workflow já tem o passo, condicional à secret).
+
+**Sem NuGet:** botão **"Use this template"** (repo marcado como Template) — o caminho mais simples.

@@ -13,6 +13,10 @@
     <Authors>Ferraz2000</Authors>
     <Description>Template D365 Customer Engagement: vertical slice (Screaming), plugins C#, web resources TypeScript, testes, CI, doc-sync e memória (Hipocampo).</Description>
     <PackageTags>dotnet-new;templates;d365;dataverse;powerplatform;crm</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Ferraz2000/D365-template-</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Ferraz2000/D365-template-</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
 
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>

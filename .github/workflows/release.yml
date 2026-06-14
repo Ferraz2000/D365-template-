@@ -1,0 +1,44 @@
+name: release
+
+# Ao publicar um Release no GitHub, empacota o template e publica.
+# - GitHub Packages: usa o GITHUB_TOKEN automático (NÃO precisa de API key).
+# - nuget.org: opcional, só roda se você criar a secret NUGET_API_KEY.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Pack (versão = tag do release, sem o "v")
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          dotnet pack Template.Pack.csproj -c Release -o nupkg -p:PackageVersion="$VERSION"
+
+      - name: Publicar no GitHub Packages (sem API key — GITHUB_TOKEN)
+        run: >
+          dotnet nuget push "nupkg/*.nupkg"
+          --api-key ${{ secrets.GITHUB_TOKEN }}
+          --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+          --skip-duplicate
+
+      - name: Publicar no nuget.org (opcional — só se houver a secret NUGET_API_KEY)
+        if: ${{ env.NUGET_API_KEY != '' }}
+        run: >
+          dotnet nuget push "nupkg/*.nupkg"
+          --api-key ${{ env.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
