@@ -16,7 +16,8 @@ namespace Template.Plugins.Plugins.Account
             if (!context.TryGetTarget<Model.Account>(out var account)) return;
             account.Id = context.PluginContext.PrimaryEntityId; // garante o Id no Post-Operation
 
-            var service = new AccountService(new ContactRepository(context.UserService));
+            var crm = context.UserService;
+            var service = new AccountService(new AccountRepository(crm), new ContactRepository(crm));
             service.PropagarContatoPrincipal(account);
         }
     }

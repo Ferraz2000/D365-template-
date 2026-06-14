@@ -36,7 +36,7 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 5 testes, 0 falhas |
+| **C# (net462, via Mono)** | ✅ 14 testes, 0 falhas |
 | **TypeScript (Jest)** | ✅ 5 testes, 2 suítes |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)

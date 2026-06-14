@@ -13,21 +13,23 @@ namespace Template.Plugins.Model
         public Contact() : base(EntityLogicalName) { }
         public Contact(Guid id) : base(EntityLogicalName, id) { }
 
+        public string FullName
+        {
+            get => GetAttributeValue<string>(Fields.FullName);
+            set => SetAttributeValue(Fields.FullName, value);
+        }
+
+        /// <summary>Lookup polimórfico (Customer = account ou contact).</summary>
         public EntityReference ParentCustomerId
         {
             get => GetAttributeValue<EntityReference>(Fields.ParentCustomerId);
             set => SetAttributeValue(Fields.ParentCustomerId, value);
         }
 
-        public Guid ContactId
-        {
-            get => GetAttributeValue<Guid>(Fields.ContactId);
-            set { SetAttributeValue(Fields.ContactId, value); Id = value; }
-        }
-
         public static class Fields
         {
             public const string ContactId = "contactid";
+            public const string FullName = "fullname";
             public const string ParentCustomerId = "parentcustomerid";
         }
     }

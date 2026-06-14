@@ -49,5 +49,12 @@ namespace Template.Plugins.Repositories
             Guard.AgainstNull(query, nameof(query));
             return Service.RetrieveMultiple(query);
         }
+
+        // Relacionamento N:N — associar/desassociar registros.
+        protected void Associate(string entityName, Guid entityId, string relationshipName, params EntityReference[] related)
+            => Service.Associate(entityName, entityId, new Relationship(relationshipName), new EntityReferenceCollection(related));
+
+        protected void Disassociate(string entityName, Guid entityId, string relationshipName, params EntityReference[] related)
+            => Service.Disassociate(entityName, entityId, new Relationship(relationshipName), new EntityReferenceCollection(related));
     }
 }

@@ -103,27 +103,78 @@ namespace Template.Plugins.Tests.Fakes
             var qe = query as QueryExpression;
             var name = qe?.EntityName ?? (query as QueryByAttribute)?.EntityName;
             IEnumerable<Entity> items = _store.Values.Where(e => name == null || e.LogicalName == name);
-            if (qe?.Criteria != null)
-                items = items.Where(e => MatchesFilter(e, qe.Criteria));
-            if (qe != null && qe.TopCount.HasValue)
-                items = items.Take(qe.TopCount.Value);
+            if (qe?.Criteria != null) items = items.Where(e => MatchesFilter(e, qe.Criteria));
+            if (qe != null && qe.Orders.Count > 0) items = ApplyOrders(items, qe.Orders);
+            if (qe != null && qe.TopCount.HasValue) items = items.Take(qe.TopCount.Value);
+            // (link-entity/joins não são simulados aqui — cobertos por org real / FakeXrmEasy.)
             return new EntityCollection(items.Select(Clone).ToList());
         }
 
-        // Filtro mínimo (Equal/NotEqual + subfiltros AND) — suficiente para testar queries dos repositórios.
+        private static IEnumerable<Entity> ApplyOrders(IEnumerable<Entity> items, DataCollection<OrderExpression> orders)
+        {
+            IOrderedEnumerable<Entity> ordered = null;
+            foreach (var o in orders)
+            {
+                object Key(Entity e) => Normalize(e.Contains(o.AttributeName) ? e[o.AttributeName] : null);
+                ordered = ordered == null
+                    ? (o.OrderType == OrderType.Ascending ? items.OrderBy(Key) : items.OrderByDescending(Key))
+                    : (o.OrderType == OrderType.Ascending ? ordered.ThenBy(Key) : ordered.ThenByDescending(Key));
+            }
+            return ordered ?? items;
+        }
+
         private static bool MatchesFilter(Entity e, FilterExpression filter)
         {
-            foreach (var c in filter.Conditions)
+            var results = new List<bool>();
+            foreach (var c in filter.Conditions) results.Add(MatchesCondition(e, c));
+            foreach (var sub in filter.Filters) results.Add(MatchesFilter(e, sub));
+            if (results.Count == 0) return true;
+            return filter.FilterOperator == LogicalOperator.And ? results.All(x => x) : results.Any(x => x);
+        }
+
+        private static bool MatchesCondition(Entity e, ConditionExpression c)
+        {
+            var actual = Normalize(e.Contains(c.AttributeName) ? e[c.AttributeName] : null);
+            object First() => Normalize(c.Values.Count > 0 ? c.Values[0] : null);
+            switch (c.Operator)
             {
-                var actual = e.Contains(c.AttributeName) ? e[c.AttributeName] : null;
-                var expected = c.Values.Count > 0 ? c.Values[0] : null;
-                var equal = Equals(actual, expected);
-                if (c.Operator == ConditionOperator.Equal && !equal) return false;
-                if (c.Operator == ConditionOperator.NotEqual && equal) return false;
+                case ConditionOperator.Equal: return Equals(actual, First());
+                case ConditionOperator.NotEqual: return !Equals(actual, First());
+                case ConditionOperator.In: return c.Values.Select(Normalize).Contains(actual);
+                case ConditionOperator.Like: return Like(actual as string, c.Values.FirstOrDefault() as string);
+                case ConditionOperator.GreaterThan: return Compare(actual, First()) > 0;
+                case ConditionOperator.GreaterEqual: return Compare(actual, First()) >= 0;
+                case ConditionOperator.LessThan: return Compare(actual, First()) < 0;
+                case ConditionOperator.LessEqual: return Compare(actual, First()) <= 0;
+                default: throw new NotSupportedException($"Operador {c.Operator} não simulado no fake.");
             }
-            foreach (var sub in filter.Filters)
-                if (!MatchesFilter(e, sub)) return false;
-            return true;
+        }
+
+        // Desembrulha tipos do SDK para valores comparáveis.
+        private static object Normalize(object v)
+        {
+            switch (v)
+            {
+                case OptionSetValue o: return o.Value;
+                case Money m: return m.Value;
+                case EntityReference r: return r.Id;
+                case AliasedValue a: return Normalize(a.Value);
+                default: return v;
+            }
+        }
+
+        private static int Compare(object a, object b)
+        {
+            if (a == null || b == null) return -1;
+            if (a is IComparable cmp && a.GetType() == b.GetType()) return cmp.CompareTo(b);
+            return Convert.ToDecimal(a).CompareTo(Convert.ToDecimal(b));
+        }
+
+        private static bool Like(string value, string pattern)
+        {
+            if (value == null || pattern == null) return false;
+            var regex = "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("%", ".*").Replace("_", ".") + "$";
+            return System.Text.RegularExpressions.Regex.IsMatch(value, regex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         }
 
         public OrganizationResponse Execute(OrganizationRequest request) => throw new NotSupportedException();

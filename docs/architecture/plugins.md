@@ -70,4 +70,34 @@ Plugin/Service → Model (entidades tipadas)
 - Use **Pre/Post Images** (`GetPreImage<T>`) em vez de `Retrieve` extra.
 - Falha de negócio → `InvalidPluginExecutionException` com mensagem clara.
 
-> Testes: `docs/architecture/testing.md` (plugin, service e repository testados isolados).
+## Tipos do D365 no Model (exemplos em `Model/Account.cs`)
+| Tipo D365 | No código | Exemplo |
+|---|---|---|
+| Texto | `string` | `Name` |
+| Lookup (N:1) | `EntityReference` | `PrimaryContactId` |
+| Money | `decimal?` (guarda `Money`) | `Revenue` |
+| OptionSet | `enum?` (guarda `OptionSetValue`) | `Category` → `AccountCategory` |
+| State | `enum?` | `State` → `AccountState` |
+| Inteiro | `int?` | `NumberOfEmployees` |
+| Data/hora (UTC) | `DateTime?` | `LastOnHoldTime` |
+
+## Queries (exemplos em `Repositories/AccountRepository.cs`)
+- **Igualdade**: `GetByName` (`ConditionOperator.Equal`).
+- **Like** + ordenação: `SearchByNameLike`.
+- **OptionSet + In**: `FindByCategory(params AccountCategory[])`.
+- **Money + filtro/ordem/top**: `TopByRevenue(min, top)`.
+- **Filtro composto AND/OR**: `FindActivePreferredOrBig` (`FilterExpression` aninhado).
+- **Relacionamento N:1 na query (link-entity + AliasedValue)**: `PrimaryContactNames`.
+- **N:N (Associate)**: `AssociateContacts(accountId, relationship, ids)`.
+
+> Regra que **consome** uma query: `AccountService.RejeitarSeNomeDuplicado` usa `GetByName`.
+> Money→OptionSet numa regra: `ClassificarContaPlugin`.
+
+## Faltou (sugestões — peça que eu adiciono)
+- **DateTime/timezone** (comportamento UTC, `LocalTimeFromUtcTimeRequest`), **multi-select OptionSet**
+  (`OptionSetValueCollection`), **lookup polimórfico** (Customer = account|contact),
+  **FetchXML** (alternativa a QueryExpression), **paginação** (`PagingInfo`/cookie),
+  **ExecuteMultiple** (lote), **Upsert**, **rollup/calculated** (read-only),
+  **shared variables** entre steps, **`context.Depth`** anti-loop, **Activities** (task/email).
+
+> Testes: `docs/architecture/testing.md` (model, repository, service e plugin testados isolados).
