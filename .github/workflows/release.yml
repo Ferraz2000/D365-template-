@@ -7,7 +7,7 @@ on:
   release:
     types: [published]
   push:
-    tags: ["v*"]   # empurrar uma tag v1.2.3 também publica
+    tags: ["v*", "V*"]   # empurrar uma tag v1.2.3 também publica
 
 permissions:
   contents: read
@@ -27,7 +27,7 @@ jobs:
       - name: Pack (versão = tag do release, sem o "v")
         run: |
           VERSION="${{ github.event.release.tag_name || github.ref_name }}"
-          VERSION="${VERSION#v}"
+          VERSION="${VERSION#v}"; VERSION="${VERSION#V}"   # aceita v1.2.3 ou V1.2.3
           dotnet pack Template.Pack.csproj -c Release -o nupkg -p:PackageVersion="$VERSION"
 
       - name: Publicar no GitHub Packages (sem API key — GITHUB_TOKEN)
