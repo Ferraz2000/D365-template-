@@ -1,30 +1,24 @@
+import { XrmMockGenerator } from "xrm-mock";
 import { onLoad } from "./form";
 
-function fakeContext(name: string | null) {
-  const setValue = jest.fn();
-  const setFormNotification = jest.fn();
-  const attr = { getValue: () => name, setValue };
-  const formContext = {
-    getAttribute: () => attr,
-    ui: { setFormNotification },
-  };
-  return {
-    executionContext: { getFormContext: () => formContext } as unknown as Xrm.Events.EventContext,
-    setValue,
-    setFormNotification,
-  };
-}
-
-describe("Account onLoad", () => {
-  it("avisa quando o nome está vazio", () => {
-    const { executionContext, setFormNotification } = fakeContext("");
-    onLoad(executionContext);
-    expect(setFormNotification).toHaveBeenCalled();
-  });
+describe("Account onLoad (xrm-mock)", () => {
+  beforeEach(() => XrmMockGenerator.initialise());
 
   it("normaliza o nome quando há valor", () => {
-    const { executionContext, setValue } = fakeContext("  Acme  ");
-    onLoad(executionContext);
-    expect(setValue).toHaveBeenCalledWith("Acme");
+    const attr = XrmMockGenerator.Attribute.createString("name", "  Acme  ");
+
+    onLoad(XrmMockGenerator.getEventContext());
+
+    expect(attr.getValue()).toBe("Acme");
+  });
+
+  it("avisa quando o nome está vazio", () => {
+    XrmMockGenerator.Attribute.createString("name", "");
+    const context = XrmMockGenerator.getEventContext();
+    const spy = jest.spyOn(context.getFormContext().ui, "setFormNotification");
+
+    onLoad(context);
+
+    expect(spy).toHaveBeenCalled();
   });
 });

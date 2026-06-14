@@ -29,6 +29,11 @@ src/webresources/tpl/
 Regras de validação em **módulos puros** (`src/validacao.ts`: `emailValido`, `cnpjValido`) — sem `Xrm`,
 fáceis de testar com Jest. Os entry-points de formulário chamam essas funções.
 
+## Ferramental
+- **Build com source map** (`esbuild --sourcemap`) → debug no F12 do navegador.
+- **Testes**: lógica pura sem mock; entry-points de formulário com **`xrm-mock`** (mock padrão do `Xrm`).
+- **Lint/format**: ESLint (flat config + typescript-eslint) e Prettier — `npm run lint` / `npm run format`.
+
 ## Convenções
 - 1 entry-point por formulário/feature; funções de evento exportadas.
 - Regra de negócio em módulo puro (sem `Xrm`) → testar sem mock pesado.
