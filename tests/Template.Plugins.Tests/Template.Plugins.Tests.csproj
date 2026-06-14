@@ -12,6 +12,12 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
 
+  <!-- Windows/.NET completo: binding redirect unifica System.Net.Http (4.0.0.0 -> 4.2.0.0). -->
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <AppConfig>windows.binding.config</AppConfig>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
@@ -33,11 +39,11 @@
   </ItemGroup>
 
   <!--
-    NetArchTest traz um System.Net.Http.dll transitivo cuja EnsureSuccessStatusCode
-    quebra no Mono (String.Format com null). Removemos do output para o runtime usar
-    o System.Net.Http nativo. No Windows/.NET completo isso é inofensivo (usa o do GAC).
+    SÓ no Mono/Linux: NetArchTest traz um System.Net.Http.dll transitivo cuja
+    EnsureSuccessStatusCode quebra no Mono. Removemos do output para usar o nativo.
+    No Windows o DLL é NECESSÁRIO (não apagar) — lá o binding redirect resolve a versão.
   -->
-  <Target Name="RemoverSystemNetHttpTransitivo" AfterTargets="Build">
+  <Target Name="RemoverSystemNetHttpTransitivo" AfterTargets="Build" Condition="'$(OS)' != 'Windows_NT'">
     <Delete Files="$(OutDir)System.Net.Http.dll" />
   </Target>
 
