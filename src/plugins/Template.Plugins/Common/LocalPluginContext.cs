@@ -43,6 +43,21 @@ namespace Template.Plugins.Common
             return false;
         }
 
+        /// <summary>
+        /// O Target como entidade tipada (early-bound). <c>ToEntity</c> compartilha o
+        /// AttributeCollection, então alterar a entidade tipada reflete no Target original.
+        /// </summary>
+        public bool TryGetTarget<T>(out T target) where T : Entity
+        {
+            if (TryGetTarget(out var entity))
+            {
+                target = entity.ToEntity<T>();
+                return true;
+            }
+            target = null;
+            return false;
+        }
+
         public Entity GetPreImage(string alias) =>
             PluginContext.PreEntityImages.TryGetValue(alias, out var img) ? img : null;
 

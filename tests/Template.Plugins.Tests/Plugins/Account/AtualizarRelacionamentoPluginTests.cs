@@ -1,43 +1,44 @@
 using System;
-using System.Linq;
-using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
-using Template.Plugins.Plugins.Account;
+using Template.Plugins.Tests.Fakes;
 using Xunit;
+using Account = Template.Plugins.Model.Account;
+using Contact = Template.Plugins.Model.Contact;
+using AtualizarRelacionamentoPlugin = Template.Plugins.Plugins.Account.AtualizarRelacionamentoPlugin;
 
-namespace Template.Plugins.Tests.Plugins.Account
+namespace Template.Plugins.Tests
 {
     public class AtualizarRelacionamentoPluginTests
     {
         [Fact]
         public void Propaga_conta_para_o_contato_principal()
         {
-            // Arrange — um contato já existente
-            var ctx = new XrmFakedContext();
-            var contatoId = Guid.NewGuid();
-            ctx.Initialize(new[] { new Entity(Tables.Contact, contatoId) });
+            // Arrange — um contato já existente no "Dataverse" fake
+            var harness = new PluginHarness();
+            var contatoId = harness.Service.Create(new Contact(Guid.NewGuid()));
 
             var contaId = Guid.NewGuid();
-            var target = new Entity(Tables.Account, contaId);
-            target["primarycontactid"] = new EntityReference(Tables.Contact, contatoId);
+            var target = new Account(contaId)
+            {
+                PrimaryContactId = new EntityReference(Contact.EntityLogicalName, contatoId)
+            };
 
-            var pluginCtx = ctx.GetDefaultPluginContext();
-            pluginCtx.MessageName = Messages.Update;
-            pluginCtx.Stage = Stages.PostOperation;
-            pluginCtx.PrimaryEntityId = contaId;
-            pluginCtx.InputParameters = new ParameterCollection { { "Target", target } };
+            var context = harness.Context(Messages.Update, Stages.PostOperation);
+            context.PrimaryEntityId = contaId;
+            context.InputParameters["Target"] = target;
 
             // Act
-            ctx.ExecutePluginWith<AtualizarRelacionamentoPlugin>(pluginCtx);
+            harness.Execute<AtualizarRelacionamentoPlugin>(context);
 
             // Assert — o contato passou a apontar para a conta
-            var service = ctx.GetOrganizationService();
-            var contato = service.Retrieve(Tables.Contact, contatoId, new ColumnSet("parentcustomerid"));
-            var parent = contato.GetAttributeValue<EntityReference>("parentcustomerid");
-            Assert.NotNull(parent);
-            Assert.Equal(contaId, parent.Id);
+            var contato = harness.Service
+                .Retrieve(Contact.EntityLogicalName, contatoId, new ColumnSet(true))
+                .ToEntity<Contact>();
+
+            Assert.NotNull(contato.ParentCustomerId);
+            Assert.Equal(contaId, contato.ParentCustomerId.Id);
         }
     }
 }

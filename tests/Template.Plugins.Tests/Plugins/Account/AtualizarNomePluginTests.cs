@@ -1,49 +1,44 @@
 using System;
-using FakeXrmEasy;
-using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
-using Template.Plugins.Plugins.Account;
+using Template.Plugins.Tests.Fakes;
 using Xunit;
+using Account = Template.Plugins.Model.Account;
+using AtualizarNomePlugin = Template.Plugins.Plugins.Account.AtualizarNomePlugin;
 
-namespace Template.Plugins.Tests.Plugins.Account
+namespace Template.Plugins.Tests
 {
     public class AtualizarNomePluginTests
     {
         [Fact]
         public void Apara_espacos_do_nome_no_pre_operation()
         {
-            // Arrange
-            var ctx = new XrmFakedContext();
-            var target = new Entity("account", Guid.NewGuid());
-            target["name"] = "  Acme  ";
+            // Arrange — entidade tipada (early-bound)
+            var harness = new PluginHarness();
+            var target = new Account(Guid.NewGuid()) { Name = "  Acme  " };
 
-            var pluginCtx = ctx.GetDefaultPluginContext();
-            pluginCtx.MessageName = Messages.Update;
-            pluginCtx.Stage = Stages.PreOperation;
-            pluginCtx.InputParameters = new ParameterCollection { { "Target", target } };
+            var context = harness.Context(Messages.Update, Stages.PreOperation);
+            context.InputParameters["Target"] = target;
 
             // Act
-            ctx.ExecutePluginWith<AtualizarNomePlugin>(pluginCtx);
+            harness.Execute<AtualizarNomePlugin>(context);
 
-            // Assert — Pre-Operation: alterar o Target basta
-            Assert.Equal("Acme", target.GetAttributeValue<string>("name"));
+            // Assert — ToEntity compartilha os atributos, então a alteração reflete no Target
+            Assert.Equal("Acme", target.Name);
         }
 
         [Fact]
         public void Ignora_quando_nao_ha_nome_no_target()
         {
-            var ctx = new XrmFakedContext();
-            var target = new Entity("account", Guid.NewGuid());
+            var harness = new PluginHarness();
+            var target = new Account(Guid.NewGuid());
 
-            var pluginCtx = ctx.GetDefaultPluginContext();
-            pluginCtx.MessageName = Messages.Update;
-            pluginCtx.Stage = Stages.PreOperation;
-            pluginCtx.InputParameters = new ParameterCollection { { "Target", target } };
+            var context = harness.Context(Messages.Update, Stages.PreOperation);
+            context.InputParameters["Target"] = target;
 
-            var ex = Record.Exception(() => ctx.ExecutePluginWith<AtualizarNomePlugin>(pluginCtx));
+            var ex = Record.Exception(() => harness.Execute<AtualizarNomePlugin>(context));
 
             Assert.Null(ex);
-            Assert.False(target.Contains("name"));
+            Assert.False(target.Contains(Account.Fields.Name));
         }
     }
 }

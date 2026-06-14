@@ -1,32 +1,31 @@
 using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
+using Template.Plugins.Model;
 using Template.Plugins.Repositories;
 
 namespace Template.Plugins.Plugins.Account
 {
     /// <summary>
     /// Responsabilidade única: ao mudar o contato principal da conta, propaga o vínculo.
-    /// Usa IRepository (acesso a dados via abstração — nunca IOrganizationService cru).
+    /// Usa IRepository (acesso a dados via abstração — nunca IOrganizationService cru) e
+    /// entidades tipadas (early-bound).
     /// Registro: message=Update, stage=Post-Operation, entity=account, filtro=primarycontactid.
     /// </summary>
     public sealed class AtualizarRelacionamentoPlugin : PluginBase
     {
         protected override void Execute(LocalPluginContext context)
         {
-            if (!context.TryGetTarget(out var target)) return;
-            if (!target.Contains("primarycontactid")) return;
-
-            var contato = target.GetAttributeValue<EntityReference>("primarycontactid");
-            if (contato == null) return;
+            if (!context.TryGetTarget<Model.Account>(out var account)) return;
+            if (account.PrimaryContactId == null) return;
 
             var repo = context.Resolve<IRepository>();
 
-            // Exemplo: refletir a conta como "parent" no contato principal.
-            var update = new Entity(Tables.Contact, contato.Id)
+            // Refletir a conta como "parent" no contato principal.
+            var contato = new Contact(account.PrimaryContactId.Id)
             {
-                ["parentcustomerid"] = new EntityReference(Tables.Account, context.PluginContext.PrimaryEntityId)
+                ParentCustomerId = new EntityReference(Model.Account.EntityLogicalName, context.PluginContext.PrimaryEntityId)
             };
-            repo.Update(update);
+            repo.Update(contato);
             context.Trace("Relacionamento conta↔contato atualizado.");
         }
     }

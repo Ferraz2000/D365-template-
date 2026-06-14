@@ -21,6 +21,8 @@
   <ItemGroup>
     <!-- SDK do Dataverse para plugins. Versão fixada por boa prática de ALM. -->
     <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.49" />
+    <!-- Permite compilar net462 fora do Windows (reference assemblies). Não vai pro output. -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

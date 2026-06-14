@@ -10,14 +10,11 @@ namespace Template.Plugins.Plugins.Account
     {
         protected override void Execute(LocalPluginContext context)
         {
-            if (!context.TryGetTarget(out var target)) return;
-            if (!target.Contains("name")) return;
+            if (!context.TryGetTarget<Model.Account>(out var account)) return;
+            if (string.IsNullOrWhiteSpace(account.Name)) return;
 
-            var nome = target.GetAttributeValue<string>("name");
-            if (string.IsNullOrWhiteSpace(nome)) return;
-
-            // Regra única: aparar espaços e padronizar. (Pre-Operation: alterar o Target basta.)
-            target["name"] = nome.Trim();
+            // Pre-Operation: alterar a entidade tipada reflete no Target (AttributeCollection compartilhado).
+            account.Name = account.Name.Trim();
             context.Trace("Nome da conta normalizado.");
         }
     }

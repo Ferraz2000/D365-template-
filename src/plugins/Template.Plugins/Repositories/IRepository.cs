@@ -14,6 +14,10 @@ namespace Template.Plugins.Repositories
         void Update(Entity entity);
         void Delete(string logicalName, Guid id);
         Entity Retrieve(string logicalName, Guid id, params string[] columns);
+
+        /// <summary>Retrieve tipado (early-bound): o logical name vem de <typeparamref name="T"/>.</summary>
+        T Retrieve<T>(Guid id, params string[] columns) where T : Entity, new();
+
         EntityCollection RetrieveMultiple(QueryBase query);
     }
 }

@@ -17,7 +17,7 @@ src/
 ├── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
 └── pcf/                         # controles PCF
 tests/
-└── Template.Plugins.Tests/     # xUnit + FakeXrmEasy (testes de plugin)
+└── Template.Plugins.Tests/     # xUnit + harness de fakes no repo (sem dependência externa)
 docs/
 ├── architecture/               # O PADRÃO escrito (plugins, solutions, webresources, testing, alm)
 └── brain/                      # memória durável (hipocampo)
@@ -32,6 +32,7 @@ docs/
 ## Convenções de plugin (resumo)
 - `src/plugins/Template.Plugins/Plugins/<Entidade>/<Acao>Plugin.cs` — um arquivo por ação.
 - Herde de `PluginBase`; faça **uma** coisa no `Execute`.
+- Use **entidades tipadas** (`Model/`): `context.TryGetTarget<Account>(out var account)` → `account.Name`.
 - Registre cada classe no seu próprio step (mensagem/estágio/entidade).
 
 ## Memória (hipocampo)

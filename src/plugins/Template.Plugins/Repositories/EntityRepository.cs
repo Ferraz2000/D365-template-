@@ -41,6 +41,12 @@ namespace Template.Plugins.Repositories
             return _service.Retrieve(logicalName, id, cs);
         }
 
+        public T Retrieve<T>(Guid id, params string[] columns) where T : Entity, new()
+        {
+            var logicalName = new T().LogicalName;
+            return Retrieve(logicalName, id, columns).ToEntity<T>();
+        }
+
         public EntityCollection RetrieveMultiple(QueryBase query)
         {
             Guard.AgainstNull(query, nameof(query));

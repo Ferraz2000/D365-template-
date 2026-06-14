@@ -11,10 +11,10 @@ namespace Template.Plugins.Plugins.Account
     {
         protected override void Execute(LocalPluginContext context)
         {
-            if (!context.TryGetTarget(out var target)) return;
+            if (!context.TryGetTarget<Model.Account>(out var account)) return;
 
             var accountId = context.PluginContext.PrimaryEntityId; // id já existe no Post
-            context.Trace($"Enfileirar integração da conta {accountId}.");
+            context.Trace($"Enfileirar integração da conta {accountId} ({account.Name}).");
 
             // TODO: chamada à integração (fila/serviço). Mantenha fino: delegue a um serviço.
         }

@@ -12,6 +12,7 @@ em `docs/brain/` (hipocampo).
 ## Estrutura (o que mora onde)
 - `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.**
   - `Plugins/<Entidade>/<Acao>Plugin.cs` — handlers finos, **gritam o domínio** (Account, Opportunity, Case…).
+  - `Model/` — entidades tipadas (early-bound): `public class Account : Entity` (`account.Name`, não `entity["name"]`).
   - `Common/` — `PluginBase`, `LocalPluginContext`, IoC, `Guard`, constantes (cross-cutting).
   - `Repositories/` — `IRepository` + implementações (acesso a dados atrás de abstração).
 - `src/webresources/<prefix>/` — TypeScript por feature → build `dist/` (JS que sobe).
@@ -35,7 +36,7 @@ chama a regra → fim. Lógica de negócio fora do `Execute` boilerplate.
 - Web resources: TypeScript compilado; pasta = prefixo do publisher; namespaces (não poluir escopo global).
 
 ## Build / test
-- Plugins: `dotnet build src/plugins/<Pub>.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests` (xUnit + FakeXrmEasy).
+- Plugins: `dotnet build src/plugins/<Pub>.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests` (xUnit + harness de fakes no repo, sem dependência externa).
 - Web resources: em `src/webresources/<prefix>/` → `npm ci && npm run build` · testes: `npm test` (Jest).
 - Padrão de testes: `docs/architecture/testing.md`. **Todo plugin/regra nova vem com teste.**
 - Empacotar/deploy: `pac solution ...` — ver `docs/architecture/environments-alm.md` (artefato de build, fora do git).

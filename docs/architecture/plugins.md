@@ -18,10 +18,12 @@ src/plugins/<Pub>.Plugins/
 │   │   └── AtualizarRelacionamentoPlugin.cs
 │   ├── Opportunity/
 │   └── Case/
+├── Model/                   # entidades tipadas (early-bound)
+│   ├── Account.cs           #   public class Account : Entity  [EntityLogicalName("account")]
+│   └── Contact.cs
 ├── Common/                  # cross-cutting compartilhado
 │   ├── PluginBase.cs        #   base IPlugin: contexto, IoC, tratamento de erro
-│   ├── LocalPluginContext.cs
-│   ├── ServiceFactory.cs    #   composição/IoC (resolve dependências)
+│   ├── LocalPluginContext.cs#   monta serviços do pipeline + Resolve<T>() (IoC básico)
 │   ├── Guard.cs
 │   └── Constants.cs
 └── Repositories/            # acesso a dados atrás de abstração
@@ -29,13 +31,21 @@ src/plugins/<Pub>.Plugins/
     └── EntityRepository.cs
 ```
 
+## Entidades tipadas (early-bound)
+- Tabelas são **classes model tipadas**: `public class Account : Entity` com propriedades
+  (`account.Name` em vez de `entity["name"]`) e nomes lógicos em `Fields`.
+- Exigem o atributo **`[EntityLogicalName("...")]`** (usado por `Entity.ToEntity<T>()`) —
+  mesmo padrão do `pac modelbuilder`/CrmSvcUtil.
+- `context.TryGetTarget<Account>(out var account)` devolve o Target tipado. `ToEntity<T>`
+  compartilha o `AttributeCollection`, então em **Pre-Operation** setar `account.Name` reflete no Target.
+
 ## Regra de dependência (Clean)
 ```
-Plugins  ──depende de──▶  Common (abstrações) + Repositories (IRepository)
+Plugins ──depende de──▶ Common (abstrações) + Model + Repositories (IRepository)
 Repositories ──implementa──▶ acesso a dados (IOrganizationService)
-Common / Repositories  ──NÃO conhecem──▶  Plugins
+Common / Repositories ──NÃO conhecem──▶ Plugins
 ```
-- O plugin é **fino**: lê o contexto → resolve dependências → chama a regra → fim.
+- O plugin é **fino**: lê o Target tipado → resolve dependências → chama a regra → fim.
 - **Acesso a dados só via `IRepository`** — nunca `IOrganizationService` cru dentro de um plugin.
 - Lógica de negócio mora no handler da ação, não no boilerplate de pipeline.
 
@@ -47,6 +57,7 @@ Common / Repositories  ──NÃO conhecem──▶  Plugins
 - Falhas de negócio → `InvalidPluginExecutionException` com mensagem clara.
 
 ## Registro (resumo)
-Cada classe vira um *step* no Plugin Registration Tool / via solution:
-mensagem (Create/Update/Delete/…), estágio (Pre-Validation/Pre-Operation/Post-Operation),
-modo (sync/async), entidade e filtros de atributo. Um arquivo ↔ um step.
+Cada classe vira um *step*: mensagem (Create/Update/Delete/…), estágio (Pre-Validation/
+Pre-Operation/Post-Operation), modo (sync/async), entidade e filtros de atributo. Um arquivo ↔ um step.
+
+> Testes do assembly: `docs/architecture/testing.md`.
