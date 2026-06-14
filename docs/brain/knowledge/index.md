@@ -16,6 +16,7 @@ tags: [knowledge, index, navigation]
 
 ## meta
 - [escopo-e-stack](meta/escopo-e-stack.md) — escopo do template (só código, PT-BR, team/PR, net462, D365 CE). Fontes: raw/sources/2026-06-14-sessao-decisoes.md.
+- [template-reutilizavel](meta/template-reutilizavel.md) — dotnet new + prefixo centralizado + GitHub Template; MIT/público; não injeta plugins. Fontes: sessao-decisoes.
 
 ## architecture
 - [vertical-slice-screaming](architecture/vertical-slice-screaming.md) — assembly por feature (namespace = feature) + regra de dependência. Fontes: sessao-decisoes, padroes-plugin.
@@ -32,3 +33,4 @@ tags: [knowledge, index, navigation]
 
 ## alm
 - [solutions-fora-do-repo](alm/solutions-fora-do-repo.md) — só código no repo; solution como artefato managed. Fontes: ms-learn-alm, sessao-decisoes.
+- [ci-cd-e-release](alm/ci-cd-e-release.md) — CI (cache/concurrency/path-filter) + release no GitHub Packages sem key. Fontes: sessao-decisoes.

@@ -31,7 +31,7 @@ O template **não injeta nada na sua org** — exemplos vêm prontos e inertes; 
 ## Por onde começar
 0. **Dev novo?** Comece pelo `CONTRIBUTING.md` (build, test, como adicionar um plugin/feature).
 1. Leia `AGENTS.md` (roteador) e `docs/architecture/`.
-2. Renomeie o placeholder **`Template`/`tpl`** para o publisher/prefixo real (o prefixo é praticamente imutável).
+2. Renomeie a identidade: **`dotnet new d365ce -n SeuProjeto --prefix seuprefixo`** (ou troque `Common.Publisher.Prefixo`) — ver `TEMPLATE.md`. O prefixo é praticamente imutável.
 3. Plugins: `dotnet build src/plugins/Template.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests`.
 4. Web resources: `cd src/webresources/tpl && npm ci && npm run build` · testes: `npm test`.
 

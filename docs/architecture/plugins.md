@@ -79,7 +79,7 @@ concorrência). Evita sobrescrever a alteração de outro usuário.
 | State | `enum?` | `Estado` → `EstadoConta` |
 | Inteiro / Data | `int?` / `DateTime?` | `NumeroDeFuncionarios` / `UltimaEspera` |
 
-## Queries (`Repositories/ContaRepositorio.cs`)
+## Queries (`Contas/ContaRepositorio.cs`)
 - **Igualdade** → `ObterPorNome`
 - **Like + ordenação** → `BuscarPorNome`
 - **OptionSet + In** → `ListarPorCategoria`

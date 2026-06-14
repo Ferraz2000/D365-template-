@@ -23,7 +23,8 @@
 - Este repo é a **fonte de verdade do código + do padrão**; a configuração de solution vive no
   ambiente e é exportada sob demanda como artefato.
 
-## Próximos passos (fora do escopo deste skeleton)
-- Pipeline de CI/CD (GitHub Actions ou Azure DevOps) para build dos fontes + export/import managed.
-- Power Apps Checker (análise estática) no PR.
-- Branching: feature → PR → `main`.
+## CI/CD
+- **CI já incluída** (`.github/workflows/ci.yml`): testes C#/TS + doc-sync no PR, com cache, concurrency e path filters.
+- **Release** (`.github/workflows/release.yml`): publica o template no GitHub Packages a cada Release.
+- **Próximos passos** (não incluídos): export/import **managed** da solution para Test/UAT/Prod
+  (pac/Power Platform Pipelines/Azure DevOps) e **Power Apps Checker** (análise estática) no PR.

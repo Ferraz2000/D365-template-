@@ -1,0 +1,21 @@
+# Normaliza line-endings (dev Linux + CI Windows convivem sem ruído de CRLF/LF).
+* text=auto
+
+# Sempre LF (scripts e config que rodam em shell/hooks).
+*.sh    text eol=lf
+*.cs    text
+*.ts    text
+*.js    text
+*.json  text
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.md    text
+*.toml  text
+.githooks/* text eol=lf
+
+# Binários (não diff/merge).
+*.png   binary
+*.jpg   binary
+*.dll   binary
+*.snk   binary
+*.zip   binary
