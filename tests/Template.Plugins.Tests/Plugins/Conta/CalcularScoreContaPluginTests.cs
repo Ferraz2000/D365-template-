@@ -30,5 +30,15 @@ namespace Template.Plugins.Tests
 
             Assert.Throws<InvalidPluginExecutionException>(() => harness.Execute<CalcularScoreContaPlugin>(context));
         }
+
+        [Fact]
+        public void Rejeita_input_de_tipo_errado()
+        {
+            var harness = new PluginHarness();
+            var context = harness.Context(CustomMessages.CalcularScoreConta, Stages.MainOperation);
+            context.InputParameters["AccountId"] = "isto-nao-e-entityreference"; // contrato exige EntityReference
+
+            Assert.Throws<InvalidPluginExecutionException>(() => harness.Execute<CalcularScoreContaPlugin>(context));
+        }
     }
 }

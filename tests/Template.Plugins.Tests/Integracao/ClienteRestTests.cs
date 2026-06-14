@@ -47,5 +47,31 @@ namespace Template.Plugins.Tests
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
                 => Task.FromResult(new HttpResponseMessage(HttpStatusCode.InternalServerError));
         }
+
+        private sealed class FalhaDepoisOkHandler : HttpMessageHandler
+        {
+            private int _falhasRestantes;
+            public int Chamadas;
+            public FalhaDepoisOkHandler(int falhas) { _falhasRestantes = falhas; }
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+            {
+                Chamadas++;
+                if (_falhasRestantes-- > 0)
+                    return Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable));
+                return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("ok") });
+            }
+        }
+
+        [Fact]
+        public void PostJson_faz_retry_e_sucede_na_terceira()
+        {
+            var handler = new FalhaDepoisOkHandler(2);
+            var cliente = new ClienteRest(new HttpClient(handler), maxTentativas: 3);
+
+            var resp = cliente.PostJson("https://exemplo.com/api", "{}");
+
+            Assert.Equal(3, handler.Chamadas);
+            Assert.Contains("ok", resp);
+        }
     }
 }

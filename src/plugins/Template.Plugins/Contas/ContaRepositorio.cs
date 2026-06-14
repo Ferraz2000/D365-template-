@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
 using Template.Plugins.Contatos;
@@ -18,6 +19,20 @@ namespace Template.Plugins.Contas
         public Guid Criar(Conta conta) => Create(conta);
         public void Atualizar(Conta conta) => Update(conta);
         public Conta ObterPorId(Guid id, params string[] colunas) => RetrieveById<Conta>(id, colunas);
+
+        /// <summary>
+        /// Update com **concorrência otimista**: só grava se a RowVersion ainda for a mesma
+        /// (senão o Dataverse lança erro de concorrência). Evita sobrescrever mudança de outro.
+        /// </summary>
+        public void AtualizarComConcorrencia(Conta conta, string rowVersion)
+        {
+            conta.RowVersion = rowVersion;
+            Execute(new UpdateRequest
+            {
+                Target = conta,
+                ConcurrencyBehavior = ConcurrencyBehavior.IfRowVersionMatches
+            });
+        }
 
         /// <summary>Igualdade.</summary>
         public Conta ObterPorNome(string nome)

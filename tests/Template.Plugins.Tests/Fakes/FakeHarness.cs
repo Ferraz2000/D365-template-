@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
 
@@ -228,7 +229,20 @@ namespace Template.Plugins.Tests.Fakes
             return System.Text.RegularExpressions.Regex.IsMatch(value, regex, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
         }
 
-        public OrganizationResponse Execute(OrganizationRequest request) => throw new NotSupportedException();
+        public OrganizationResponse Execute(OrganizationRequest request)
+        {
+            if (request is UpdateRequest ur)
+            {
+                var alvo = ur.Target;
+                if (ur.ConcurrencyBehavior == ConcurrencyBehavior.IfRowVersionMatches &&
+                    _store.TryGetValue(Key(alvo.LogicalName, alvo.Id), out var atual) &&
+                    atual.RowVersion != alvo.RowVersion)
+                    throw new InvalidOperationException("Conflito de concorrência (RowVersion não confere).");
+                Update(alvo);
+                return new UpdateResponse();
+            }
+            throw new NotSupportedException();
+        }
 
         public void Associate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities)
             => Associacoes.Add(new AssociacaoRegistrada
@@ -243,7 +257,7 @@ namespace Template.Plugins.Tests.Fakes
 
         private static Entity Clone(Entity e)
         {
-            var c = new Entity(e.LogicalName, e.Id);
+            var c = new Entity(e.LogicalName, e.Id) { RowVersion = e.RowVersion };
             foreach (var attr in e.Attributes) c[attr.Key] = attr.Value;
             return c;
         }

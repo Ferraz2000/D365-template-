@@ -37,4 +37,6 @@ fáceis de testar com Jest. Os entry-points de formulário chamam essas funçõe
 ## PCF (`src/pcf/`)
 - Controles de código (Power Apps Component Framework) em TypeScript.
 - Criados com `pac pcf init`; build com `npm run build`.
+- **Lógica pura testável** em `src/*.ts` (ex.: `logic.ts` → `rotuloEstrelas`), com Jest (`npm test`) —
+  o controle real (`init`/`updateView`) delega a essas funções.
 - Empacotados na solution no release (artefato de build, fora do git).

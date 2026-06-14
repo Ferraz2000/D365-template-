@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
 using Template.Plugins.Contas;
@@ -86,6 +87,31 @@ namespace Template.Plugins.Tests
             Assert.Equal("tpl_conta_contato", assoc.Relationship);
             Assert.Equal(contaId, assoc.EntityId);
             Assert.Equal(new[] { c1, c2 }, assoc.Related.ToArray());
+        }
+
+        [Fact]
+        public void AtualizarComConcorrencia_grava_quando_rowversion_confere()
+        {
+            var crm = new FakeOrganizationService();
+            var repo = new ContaRepositorio(crm);
+            var conta = new Conta(Guid.NewGuid()) { Nome = "X", RowVersion = "1" };
+            var id = crm.Create(conta);
+
+            repo.AtualizarComConcorrencia(new Conta(id) { Nome = "Y" }, "1");
+
+            Assert.Equal("Y", crm.Retrieve(Conta.EntityLogicalName, id, new ColumnSet(true)).ToEntity<Conta>().Nome);
+        }
+
+        [Fact]
+        public void AtualizarComConcorrencia_falha_quando_rowversion_diverge()
+        {
+            var crm = new FakeOrganizationService();
+            var repo = new ContaRepositorio(crm);
+            var conta = new Conta(Guid.NewGuid()) { Nome = "X", RowVersion = "1" };
+            var id = crm.Create(conta);
+
+            Assert.Throws<InvalidOperationException>(() =>
+                repo.AtualizarComConcorrencia(new Conta(id) { Nome = "Z" }, "2"));
         }
     }
 }

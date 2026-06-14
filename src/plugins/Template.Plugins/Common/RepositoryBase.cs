@@ -50,6 +50,13 @@ namespace Template.Plugins.Common
             return Service.RetrieveMultiple(query);
         }
 
+        /// <summary>Executa uma mensagem (ex.: UpdateRequest com concorrência otimista).</summary>
+        protected OrganizationResponse Execute(OrganizationRequest request)
+        {
+            Guard.AgainstNull(request, nameof(request));
+            return Service.Execute(request);
+        }
+
         // Relacionamento N:N — associar/desassociar registros.
         protected void Associate(string entityName, Guid entityId, string relationshipName, params EntityReference[] related)
             => Service.Associate(entityName, entityId, new Relationship(relationshipName), new EntityReferenceCollection(related));

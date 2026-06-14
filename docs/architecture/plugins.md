@@ -37,15 +37,21 @@ da feature — a separação é por convenção (e pelos testes de arquitetura).
 | Padrão | Plugin | Como |
 |---|---|---|
 | **Service Bus (recomendado, desacoplado)** | `PublicarEventoContaPlugin` | `context.PostarNaFila(serviceEndpointId)` → posta o contexto na fila via `IServiceEndpointNotificationService` |
-| **HTTP REST (async)** | `IntegracaoPlugin` | `new ClienteRest(httpClient).PostJson(url, json)` |
+| **HTTP REST (async)** | `IntegracaoPlugin` | `new ClienteRest(httpClient).PostJson(url, json)` — com **retry** |
 
 - **Nunca** chamar serviço externo em step **síncrono** (prende a transação) — use **async**.
-- `ClienteRest` recebe o `HttpClient` por construtor → testável com handler falso, sem rede.
+- `ClienteRest` recebe o `HttpClient` por construtor → testável com handler falso, sem rede; faz **retry** em falha transitória.
 - Preferir a fila (Service Bus) ao HTTP direto: resiliente a falhas e não acopla o CRM ao externo.
 
-## Gatilhos (exemplos em `Plugins/Conta/`)
+## Concorrência otimista
+`ContaRepositorio.AtualizarComConcorrencia(conta, rowVersion)` usa `UpdateRequest` com
+`ConcurrencyBehavior.IfRowVersionMatches` — só grava se a `RowVersion` não mudou (senão erro de
+concorrência). Evita sobrescrever a alteração de outro usuário.
+
+## Gatilhos (exemplos em `Contas/`)
 | Gatilho | Stage | Plugin | Observação |
 |---|---|---|---|
+| **Pre-Validation** | 10 | `ValidarContaPlugin` | valida cedo, **fora** da transação; lança `InvalidPluginExecutionException` |
 | **Pre-Operation** | 20 | `AtualizarNomePlugin`, `ClassificarContaPlugin` | alterar o Target já basta |
 | **Post-Operation** | 40 | `AtualizarRelacionamentoPlugin`, `IntegracaoPlugin` | já gravado; use repositório |
 | **Post + PreImage** | 40 | `RegistrarMudancaNomePlugin` | `GetPreImage<T>("preimage")` traz o valor anterior |
@@ -86,5 +92,8 @@ da feature — a separação é por convenção (e pelos testes de arquitetura).
   **FetchXML** (alternativa a QueryExpression), **paginação** (`PagingInfo`/cookie),
   **ExecuteMultiple** (lote), **Upsert**, **rollup/calculated** (read-only),
   **shared variables** entre steps, **Activities** (task/email).
+- **Precisa de infra externa** (não dá para cobrir no harness local): teste **E2E em sandbox real**
+  e arquitetura no **nível de corpo de método** (NetArchTest/Mono.Cecil em CI). O gate de doc-sync
+  é auto-verificável com `python -m hipocampo.canary`.
 
 > Testes: `docs/architecture/testing.md` (model, repository, service e plugin testados isolados).
