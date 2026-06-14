@@ -5,15 +5,40 @@ on:
     branches: [main]
   pull_request:
 
+# (1) Cancela runs antigos do mesmo ref quando chega um push novo — economiza minutos.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  # Gate de documentação/memória: roda o preflight do hipocampo (doc_links,
-  # feature_doc_sync, vault_sync). No PR, GITHUB_BASE_REF resolve o diff range.
+  # (3) Detecta o que mudou para rodar SÓ os jobs necessários (poupa o runner Windows).
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      csharp: ${{ steps.filter.outputs.csharp }}
+      ts: ${{ steps.filter.outputs.ts }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            csharp:
+              - 'src/plugins/**'
+              - 'tests/**'
+            ts:
+              - 'src/webresources/**'
+
+  # Gate de doc/memória — SEMPRE roda (rápido, no Linux).
   doc-sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # doc-sync precisa do base ref para o diff
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -22,25 +47,44 @@ jobs:
           GITHUB_EVENT_BEFORE: ${{ github.event.before }}
         run: python3 -m hipocampo.preflight
 
-  # Testes do assembly de plugins. Windows roda net462 nativo (sem Mono) e os
-  # testes de arquitetura (reflection + NetArchTest, este último a nível de IL).
   testes-csharp:
+    needs: changes
+    if: ${{ needs.changes.outputs.csharp == 'true' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+      # (2) Cache do NuGet (não precisa de lock file).
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
       - run: dotnet test tests/Template.Plugins.Tests --configuration Release
 
-  # Testes de web resources (TypeScript / Jest).
   testes-typescript:
+    needs: changes
+    if: ${{ needs.changes.outputs.ts == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      # (2) Cache do npm (chaveado pelo package.json — funciona mesmo sem lock commitado).
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('src/webresources/**/package.json') }}
+          restore-keys: npm-${{ runner.os }}-
       - name: Web resources
         working-directory: src/webresources/tpl
-        run: npm ci && npm test
+        run: |
+          npm ci || npm install   # ci se houver lock; install nos projetos gerados (sem lock)
+          npm test
+
+# Nota: com path filters, jobs irrelevantes ficam "skipped". Se você tornar
+# testes-csharp/typescript "required checks", adicione um job-resumo que dependa
+# deles com if: always() — senão um job pulado pode bloquear o merge.
