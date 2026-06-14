@@ -14,18 +14,20 @@ web resources TypeScript e PCF — com **Screaming Architecture + Clean Code** (
 ```
 src/
 ├── plugins/Template.Plugins/   # assembly C# — Plugins/ · Common/ · Repositories/
-├── webresources/tpl/           # TypeScript → dist/ (JS que sobe)
+├── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
 └── pcf/                         # controles PCF
+tests/
+└── Template.Plugins.Tests/     # xUnit + FakeXrmEasy (testes de plugin)
 docs/
-├── architecture/               # O PADRÃO escrito (plugins, solutions, webresources, alm)
+├── architecture/               # O PADRÃO escrito (plugins, solutions, webresources, testing, alm)
 └── brain/                      # memória durável (hipocampo)
 ```
 
 ## Por onde começar
 1. Leia `AGENTS.md` (roteador) e `docs/architecture/`.
 2. Renomeie o placeholder **`Template`/`tpl`** para o publisher/prefixo real (o prefixo é praticamente imutável).
-3. Plugins: `dotnet build src/plugins/Template.Plugins`.
-4. Web resources: `cd src/webresources/tpl && npm ci && npm run build`.
+3. Plugins: `dotnet build src/plugins/Template.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests`.
+4. Web resources: `cd src/webresources/tpl && npm ci && npm run build` · testes: `npm test`.
 
 ## Convenções de plugin (resumo)
 - `src/plugins/Template.Plugins/Plugins/<Entidade>/<Acao>Plugin.cs` — um arquivo por ação.

@@ -2,13 +2,18 @@
   "name": "tpl-webresources",
   "version": "0.1.0",
   "private": true,
-  "description": "Web resources (TypeScript) do template D365 CE — prefixo tpl.",
+  "description": "Web resources (TypeScript, módulos ES + bundle) do template D365 CE — prefixo tpl.",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "watch": "tsc -p tsconfig.json --watch"
+    "build": "esbuild src/account/form.ts --bundle --format=iife --global-name=Tpl --outfile=dist/account/form.js",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/xrm": "^9.0.0",
-    "typescript": "^5.4.0"
+    "esbuild": "^0.20.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.4.5"
   }
 }

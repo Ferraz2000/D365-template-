@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES6",
-    "module": "None",
+    "target": "ES2017",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "lib": ["ES2017", "DOM"],
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "noImplicitAny": true,
-    "removeComments": false,
-    "types": ["xrm"]
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["xrm", "jest"]
   },
   "include": ["src/**/*.ts"]
 }

@@ -2,30 +2,35 @@
 
 > Alvo do doc-sync: mudou `src/webresources/**` ou `src/pcf/**`? Atualize este arquivo no mesmo commit.
 
-## Web resources (TypeScript)
-- Escritos em **TypeScript**, compilados para **JavaScript** (o JS é o que sobe para o Dataverse).
-- Pasta raiz nomeada com o **prefixo do publisher** (`tpl`), espelhando o nome dos web resources no D365.
-- Organização **por feature**; código comum em `common/`.
-- Namespaces/módulos para **não poluir o escopo global** (`Xrm` é global).
+## Web resources (TypeScript, módulos ES + bundle)
+- Escritos em **TypeScript** como **módulos ES**, empacotados com **esbuild** em um bundle
+  **IIFE** (`--global-name=Tpl`); o **JS de `dist/`** é o que sobe para o Dataverse.
+- Pasta raiz nomeada com o **prefixo do publisher** (`tpl`).
+- **Lógica em módulos puros** (testáveis), **entry-points de formulário finos** que delegam.
+- Organização por feature; comum em módulos reutilizáveis.
 
 ```
 src/webresources/tpl/
-├── package.json
-├── tsconfig.json            # target ES6
+├── package.json            # scripts: build (esbuild), test (jest), typecheck (tsc)
+├── tsconfig.json           # module ESNext, target ES2017, types: xrm + jest
+├── jest.config.js          # ts-jest
 ├── src/
-│   ├── common/              # helpers compartilhados (ex.: acesso ao formContext)
-│   ├── account/             # scripts de formulário por entidade/feature
-│   └── opportunity/
-└── dist/                    # JS compilado (gitignored; é o que sobe)
+│   ├── format.ts           # lógica pura (sem Xrm) — testável
+│   ├── format.test.ts
+│   └── account/
+│       ├── form.ts         # OnLoad fino → delega a format
+│       └── form.test.ts    # mocka formContext mínimo
+└── dist/                   # bundle IIFE (gitignored; é o que sobe)
 ```
 
 ## Convenções
-- 1 arquivo TS por formulário/feature; funções de evento exportadas e referenciadas no form.
-- Tipos do cliente (`@types/xrm`) para o `Xrm`/`formContext`.
-- Build: `npm ci && npm run build` → gera `dist/` (não versionado).
+- 1 entry-point por formulário/feature; funções de evento exportadas.
+- Regra de negócio em módulo puro (sem `Xrm`) → testar sem mock pesado.
+- Registro no D365: OnLoad → `Tpl.onLoad` (nome do global do bundle).
+- Build: `npm ci && npm run build` → `dist/` (não versionado). Testes: `npm test` (ver `testing.md`).
 - Nome do web resource no D365: `tpl_/<feature>/<arquivo>.js`.
 
 ## PCF (`src/pcf/`)
 - Controles de código (Power Apps Component Framework) em TypeScript.
-- Criados/inicializados com `pac pcf init`; build com `npm run build`.
+- Criados com `pac pcf init`; build com `npm run build`.
 - Empacotados na solution no release (artefato de build, fora do git).

@@ -35,8 +35,9 @@ chama a regra → fim. Lógica de negócio fora do `Execute` boilerplate.
 - Web resources: TypeScript compilado; pasta = prefixo do publisher; namespaces (não poluir escopo global).
 
 ## Build / test
-- Plugins: `dotnet build src/plugins/<Pub>.Plugins` (assembly assinado para registro).
-- Web resources: `npm ci && npm run build` em `src/webresources/<prefix>/`.
+- Plugins: `dotnet build src/plugins/<Pub>.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests` (xUnit + FakeXrmEasy).
+- Web resources: em `src/webresources/<prefix>/` → `npm ci && npm run build` · testes: `npm test` (Jest).
+- Padrão de testes: `docs/architecture/testing.md`. **Todo plugin/regra nova vem com teste.**
 - Empacotar/deploy: `pac solution ...` — ver `docs/architecture/environments-alm.md` (artefato de build, fora do git).
 
 ## Fluxo de trabalho (team)
