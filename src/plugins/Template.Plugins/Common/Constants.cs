@@ -12,7 +12,14 @@ namespace Template.Plugins.Common
     {
         public const int PreValidation = 10;
         public const int PreOperation = 20;
+        public const int MainOperation = 30;  // usado por Custom API / Custom Action
         public const int PostOperation = 40;
+    }
+
+    /// <summary>Nomes de mensagens customizadas (Custom API / Action) do projeto.</summary>
+    public static class CustomMessages
+    {
+        public const string CalcularScoreConta = "tpl_CalcularScoreConta";
     }
 
     /// <summary>Schema names das tabelas usadas pelos plugins (prefixo do publisher: tpl).</summary>

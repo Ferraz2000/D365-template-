@@ -70,6 +70,17 @@ Plugin/Service → Model (entidades tipadas)
 - Use **Pre/Post Images** (`GetPreImage<T>`) em vez de `Retrieve` extra.
 - Falha de negócio → `InvalidPluginExecutionException` com mensagem clara.
 
+## Gatilhos (exemplos)
+| Gatilho | Stage | Exemplo | Observação |
+|---|---|---|---|
+| **Pre-Operation** | 20 | `AtualizarNomePlugin`, `ClassificarContaPlugin` | alterar o Target já basta (ainda não gravou) |
+| **Post-Operation** | 40 | `AtualizarRelacionamentoPlugin`, `IntegracaoPlugin` | já gravado; use repositório para mexer em outros registros |
+| **Post + PreImage** | 40 | `RegistrarMudancaNomePlugin` | `GetPreImage<T>("preimage")` traz o valor anterior |
+| **Custom Message** | 30 | `CalcularScoreContaPlugin` | registrado numa **Custom API/Action** (`tpl_CalcularScoreConta`), não em Create/Update |
+
+- Custom message: `GetInput<T>("Param")` lê o input do contrato; `SetOutput("Param", valor)` devolve.
+- PreImage/PostImage são configuradas no registro do step (nome + atributos).
+
 ## Tipos do D365 no Model (exemplos em `Model/Account.cs`)
 | Tipo D365 | No código | Exemplo |
 |---|---|---|

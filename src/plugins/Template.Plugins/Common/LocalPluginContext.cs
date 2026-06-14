@@ -55,5 +55,17 @@ namespace Template.Plugins.Common
             PluginContext.PostEntityImages.TryGetValue(alias, out var img) ? img.ToEntity<T>() : null;
 
         public void Trace(string message) => Tracing?.Trace(message);
+
+        // ---- mensagens customizadas (Custom API / Custom Action) ----
+        public bool IsMessage(string message) =>
+            string.Equals(MessageName, message, StringComparison.OrdinalIgnoreCase);
+
+        /// <summary>Lê um parâmetro de entrada (do Target ou de um Custom API/Action).</summary>
+        public T GetInput<T>(string name) =>
+            PluginContext.InputParameters.TryGetValue(name, out var v) && v is T typed ? typed : default(T);
+
+        /// <summary>Escreve um parâmetro de saída (resposta de um Custom API/Action).</summary>
+        public void SetOutput(string name, object value) =>
+            PluginContext.OutputParameters[name] = value;
     }
 }
