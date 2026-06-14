@@ -44,10 +44,20 @@ não conhecem `Plugins`.
 ## Fluxo de trabalho (team)
 - Trabalhe em branch de feature → **PR** para `main`. Sem commit direto em `main`.
 - Sugestão: **proteger** `main` e a pasta do vault (`docs/brain/`) com review obrigatório.
-- **Doc-sync gate** (pre-commit): mudou `src/plugins/**` ou `src/webresources/**`?
-  Atualize o doc correspondente em `docs/architecture/` **no mesmo commit**. Não use
-  `git commit --no-verify` sem autorização explícita.
+- **Doc-sync (advisory)**: mudou `src/plugins/**` ou `src/webresources/**`? Atualize o
+  doc correspondente em `docs/architecture/` no mesmo commit. O gate **avisa mas não
+  bloqueia** (`doc_sync_enforce = false`) — norma para **agentes**; o dev humano não
+  trava. Integridade real (`doc_links`/`vault_sync`: link morto, proveniência quebrada)
+  **continua** bloqueando push/PR.
 
 ## Memória (hipocampo)
 - `/capture <algo>` — propõe nota para curadoria humana antes de virar conhecimento.
 - `/search <termos>` — consulta o vault. Decisões/contratos/lições viram conhecimento durável.
+
+## Plataformas / agentes
+Memória **agnóstica**: núcleo Python puro (stdlib), git hooks e CLIs valem pra qualquer agente/humano.
+- **Qualquer agente** (CLI portável): busca `python3 -m hipocampo.search "<termos>"`;
+  briefing git `python3 -m hipocampo.hooks.session_start`.
+- **Claude Code**: automático via `.claude/settings.json` (briefing no start, capture-sweep no stop).
+- **Gemini CLI**: lê `GEMINI.md`+`AGENTS.md`; comandos `/search` `/capture` `/registra` em `.gemini/commands/`.
+- **Codex**: lê `AGENTS.md` nativo; rode os CLIs acima direto. Captura segue `docs/brain/capture.md`.

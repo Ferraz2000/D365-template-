@@ -1,20 +1,16 @@
 # brain.config.toml — configuração por projeto do hipocampo
 # Gerado por brain-init. Você não edita à mão normalmente; peça ao agente para
 # evoluir (ex.: "adiciona uma regra doc-sync para src/webresources/").
+#
+# IMPORTANTE (TOML): chaves "soltas" (sem [tabela]) precisam vir ANTES do primeiro
+# cabeçalho [tabela] — senão o parser as aninha na última seção. Mantenha todos os
+# escalares/arrays de topo aqui em cima e só depois as tabelas ([dirs], [search]…).
 
 vault_root = "docs/brain"
 language = "pt-BR"
 project_mode = "greenfield"   # projeto novo (template)
 team = true                   # fluxo de PR + sugestão de branch protegido para o vault
 base_branch = "main"
-
-[dirs]
-knowledge = "knowledge"
-inbox = "knowledge/_inbox"
-insights = "insights"
-raw_sources = "raw/sources"
-generated = "_generated"
-cache = ".brain-cache"
 
 areas = ["meta", "architecture", "plugins", "webresources", "alm"]
 
@@ -24,16 +20,6 @@ statuses = [
 ]
 active_states = ["ready", "in-progress"]
 inactive_statuses = ["rejected", "closed", "discarded", "superseded", "implemented"]
-
-[area_aliases]
-
-[inbox]
-decay_days = 30
-sweep_type = "capture-sweep"
-
-[search]
-dirs = ["knowledge", "insights", "specs", "raw/sources"]
-hidden_statuses = ["closed", "implemented", "rejected", "superseded", "deferred"]
 
 # Nível de captura: equilibrado (decisões + contratos + lições + fontes)
 capture_triggers = [
@@ -49,7 +35,31 @@ doc_links_exclude_dirs = ["coverage", "node_modules", "bin", "obj", ".venv", "di
 required_docs = []
 
 validators = ["doc_links", "feature_doc_sync", "vault_sync"]
+
+# Doc-sync como forcing function NÃO-bloqueante: avisa, mas não trava commit/push/PR.
+# Dev humano nem sempre tem tempo de atualizar todas as docs — não pode ficar bloqueado.
+# Norma segue valendo para agentes (AGENTS.md). Integridade real (doc_links/vault_sync
+# = link morto, proveniência quebrada) continua bloqueando. true → volta a travar.
+doc_sync_enforce = false
 doc_sync_escape_globs = ["**/doc-impact-reports/**/*.md"]
+
+[dirs]
+knowledge = "knowledge"
+inbox = "knowledge/_inbox"
+insights = "insights"
+raw_sources = "raw/sources"
+generated = "_generated"
+cache = ".brain-cache"
+
+[area_aliases]
+
+[inbox]
+decay_days = 30
+sweep_type = "capture-sweep"
+
+[search]
+dirs = ["knowledge", "insights", "specs", "raw/sources"]
+hidden_statuses = ["closed", "implemented", "rejected", "superseded", "deferred"]
 
 [router]
 file = "AGENTS.md"
@@ -66,9 +76,9 @@ required_files = []
 required_files_max_lines = 80
 
 # --- Doc-sync gate (team) -------------------------------------------------
-# Mexeu no código-fonte de uma área sensível? O commit exige atualizar o doc
-# correspondente no MESMO diff (ou um Doc Impact Report). Mantém código e padrão
-# em sincronia — humano e agente leem a mesma fonte da verdade.
+# Mexeu no código-fonte de uma área sensível? O agente atualiza o doc correspondente
+# no MESMO diff (ou um Doc Impact Report). Mantém código e padrão em sincronia. Agora
+# é advisory (doc_sync_enforce = false): avisa, não bloqueia o dev humano.
 
 [[doc_sync]]
 name = "plugins"
@@ -79,4 +89,3 @@ docs = ["docs/architecture/plugins.md"]
 name = "webresources"
 paths = ["src/webresources/**"]
 docs = ["docs/architecture/webresources.md"]
-

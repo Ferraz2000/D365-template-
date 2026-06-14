@@ -1,0 +1,10 @@
+description = "Propõe capturar conhecimento durável no vault (write-gate humano)"
+
+prompt = """
+O usuário quer registrar no vault: {{args}}
+
+Siga o protocolo em `docs/brain/capture.md`: classifique o conteúdo
+(fonte / conceito / contrato / proposta / persona), proponha o destino e
+**só grave após o ok**. Se criar página em `knowledge/`, adicione 1 linha em
+`docs/brain/knowledge/index.md`. Nunca capture segredos/PII.
+"""

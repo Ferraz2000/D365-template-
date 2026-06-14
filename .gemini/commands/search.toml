@@ -1,0 +1,10 @@
+description = "Busca no vault de memória do projeto (hipocampo)"
+
+prompt = """
+Busca no vault para: {{args}}
+
+!{python3 -m hipocampo.search "{{args}}"}
+
+Responda usando os resultados acima, citando as páginas de `docs/brain/`.
+Se nada relevante aparecer, diga isso em vez de inventar.
+"""

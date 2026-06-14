@@ -44,8 +44,12 @@ O template **não injeta nada na sua org** — exemplos vêm prontos e inertes; 
 
 ## Memória (hipocampo)
 Sistema de memória versionada e revisada por humano. `/capture` propõe notas, `/search`
-consulta o vault em `docs/brain/`. O **doc-sync gate** (pre-commit) exige que mudanças em
-`src/` venham com o doc de arquitetura atualizado no mesmo commit.
+consulta o vault em `docs/brain/`. O núcleo é **Python puro (stdlib)** e funciona em
+**qualquer agente** — **Claude Code** (hooks automáticos), **Gemini CLI** (`GEMINI.md` +
+`.gemini/commands/`) e **Codex** (lê `AGENTS.md` nativo) — ou via CLI: `python3 -m hipocampo.search`.
+O **doc-sync** sugere atualizar o doc de arquitetura junto com mudanças em `src/`, mas é
+**advisory** (`doc_sync_enforce = false`): avisa, não bloqueia o dev. Já a integridade do
+vault (links/proveniência) segue como gate no push/PR.
 
 > **CI**: `.github/workflows/ci.yml` roda testes (C#/TS) + doc-sync no PR. ALM/CD de solution:
 > ver `docs/architecture/environments-alm.md`.

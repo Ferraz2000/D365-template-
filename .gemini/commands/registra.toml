@@ -1,0 +1,9 @@
+description = "Apelido pt-BR de /capture — registra conhecimento no vault"
+
+prompt = """
+Registrar no vault: {{args}}
+
+Siga `docs/brain/capture.md`: classifica (fonte/conceito/contrato/proposta/persona)
+→ propõe o destino → grava só após o ok → atualiza `docs/brain/knowledge/index.md`.
+Sem segredos/PII.
+"""

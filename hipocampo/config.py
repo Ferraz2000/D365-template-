@@ -79,6 +79,10 @@ DEFAULTS = {
     # Stop-hook sweep skips when it sees one (agent-agnostic; tune per setup).
     "capture_verbs": ["/capture", "registra isso", "save to the brain"],
     "doc_sync": [],
+    # When False the doc-sync forcing function becomes advisory: feature_doc_sync
+    # still prints violations but exits 0 (never blocks commit/push/PR). Integrity
+    # validators (doc_links, vault_sync) keep gating. Default True = upstream block.
+    "doc_sync_enforce": True,
     # A changed file matching any of these globs (e.g. a Doc Impact Report)
     # satisfies every doc_sync rule for that commit.
     "doc_sync_escape_globs": ["**/doc-impact-reports/**/*.md"],
@@ -270,6 +274,10 @@ class Config:
     @property
     def doc_sync(self) -> list:
         return list(self._d["doc_sync"])
+
+    @property
+    def doc_sync_enforce(self) -> bool:
+        return bool(self._d["doc_sync_enforce"])
 
     @property
     def doc_sync_escape_globs(self) -> list:
