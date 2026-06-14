@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Empacota ESTE repositorio como um template do dotnet new.
+    Comandos de pack/push (com os flags) estao no TEMPLATE.md.
+    Depois de publicado: dotnet new install D365CE.VerticalSlice.Template
+  -->
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>D365CE.VerticalSlice.Template</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>D365 CE — plugins + web resources (vertical slice)</Title>
+    <Authors>Ferraz2000</Authors>
+    <Description>Template D365 Customer Engagement: vertical slice (Screaming), plugins C#, web resources TypeScript, testes, CI, doc-sync e memória (Hipocampo).</Description>
+    <PackageTags>dotnet-new;templates;d365;dataverse;powerplatform;crm</PackageTags>
+
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="**\*"
+             Exclude="**\bin\**;**\obj\**;**\node_modules\**;**\dist\**;.git\**;**\*.user;**\package-lock.json;Template.Pack.*;nupkg\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+
+</Project>

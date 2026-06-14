@@ -38,8 +38,30 @@ Os exemplos vêm **prontos e inertes**:
 3. Não precisa de um exemplo? É só **não registrar** (ou apagar o arquivo) — ele não faz nada sozinho.
 
 ## Depois de criar o projeto
-- `dotnet test tests/<Seu.Projeto>.Tests` e `cd src/webresources/<prefixo> && npm ci && npm test`.
-- Defina seu **Publisher/prefixo** no Dataverse (igual ao `Common.Publisher.Prefixo`).
-- Tire a **URL de integração** do hardcode (`IntegracaoPlugin`) → Environment Variable.
-- Reaproveite ou limpe o `docs/brain/` (os ADRs/knowledge são convenções-semente genéricas).
-- Proteja `main` e siga o fluxo de PR (a CI roda testes + doc-sync).
+1. **Testes:** `dotnet test tests/<Seu.Projeto>.Tests` e `cd src/webresources/<prefixo> && npm ci && npm test`.
+2. **Ligar o gate doc-sync** (não viaja por git config):
+   - No **Claude Code** liga sozinho (hook SessionStart). Fora dele: `git config core.hooksPath .githooks`.
+3. **Publisher/prefixo:** defina no Dataverse igual ao `Common.Publisher.Prefixo`.
+4. **URL de integração:** tire do hardcode (`IntegracaoPlugin`) → Environment Variable.
+5. **Proteger `main`** e seguir o fluxo de PR (a CI roda testes + doc-sync).
+
+## Memória (Hipocampo) no projeto novo
+O brain **e o motor** vêm vendorizados (funcionam out-of-the-box); o **plugin** (atalhos) é à parte.
+- **`/capture` e `/search`:** instale o plugin uma vez — `/plugin install hipocampo@hipocampo` ou
+  `npx skills add Ferraz2000/hipocampo`. (O gate, validators e hooks já funcionam sem isso.)
+- **Reset do brain por projeto:** as páginas `knowledge/` + `adrs/` são **convenções-semente genéricas** —
+  **mantenha**. Já o `log.md` e o source da sessão são específicos — zere-os:
+  ```sh
+  : > docs/brain/log.md
+  rm -f docs/brain/raw/sources/2026-06-14-sessao-decisoes.md
+  # e remova a citação dessa fonte nas páginas que a usam, ou re-capture
+  ```
+  Depois capture as decisões do **seu** projeto via `/capture`.
+
+## Publicar o template (pra qualquer um instalar por nome)
+```sh
+dotnet pack Template.Pack.csproj -c Release -o ./nupkg
+dotnet nuget push ./nupkg/*.nupkg --api-key <SUA_KEY> --source https://api.nuget.org/v3/index.json
+# depois, qualquer um:  dotnet new install D365CE.VerticalSlice.Template
+```
+Ou, sem NuGet: marque o repo como **GitHub Template** (Settings → Template repository).

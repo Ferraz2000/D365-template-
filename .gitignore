@@ -22,6 +22,9 @@ brain.config.local.toml
 *.pdb
 .vs/
 
+# ── Pacote do template (dotnet pack) ────────────────────────────────────────
+nupkg/
+
 # ── Node / TypeScript (web resources) ──────────────────────────────────
 node_modules/
 dist/
