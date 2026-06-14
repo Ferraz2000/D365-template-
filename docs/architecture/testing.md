@@ -12,7 +12,7 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
 - Padrão: Arrange (montar Target tipado + contexto) → Act (`harness.Execute<TPlugin>`) → Assert.
 - Cada camada testa isolada: **Plugins** (via `harness`), **Services** (regra, sem pipeline),
   **Repositories** (queries via fake `IOrganizationService`). Classes concretas → testa com `new`.
-- Cobertos: `AtualizarNomePlugin`, `AtualizarRelacionamentoPlugin`, `AccountService`, `AccountRepository`.
+- Cobertos: model (`Conta`), `ContaRepositorio` (queries), `ContaServico`, e os plugins (pré/pós/PreImage/custom message/anti-loop).
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -36,7 +36,7 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 17 testes, 0 falhas |
+| **C# (net462, via Mono)** | ✅ 20 testes, 0 falhas |
 | **TypeScript (Jest)** | ✅ 5 testes, 2 suítes |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)

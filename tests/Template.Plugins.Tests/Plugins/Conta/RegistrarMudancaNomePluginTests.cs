@@ -1,10 +1,9 @@
 using System;
-using System.Linq;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Account = Template.Plugins.Model.Account;
-using RegistrarMudancaNomePlugin = Template.Plugins.Plugins.Account.RegistrarMudancaNomePlugin;
+using Conta = Template.Plugins.Model.Conta;
+using RegistrarMudancaNomePlugin = Template.Plugins.Plugins.Conta.RegistrarMudancaNomePlugin;
 
 namespace Template.Plugins.Tests
 {
@@ -16,10 +15,10 @@ namespace Template.Plugins.Tests
             var harness = new PluginHarness();
             var id = Guid.NewGuid();
 
-            var target = new Account(id) { Name = "Novo Nome" };
-            var context = harness.Context(Messages.Update, Stages.PostOperation, Account.EntityLogicalName);
+            var target = new Conta(id) { Nome = "Novo Nome" };
+            var context = harness.Context(Messages.Update, Stages.PostOperation, Conta.EntityLogicalName);
             context.InputParameters["Target"] = target;
-            context.PreEntityImages["preimage"] = new Account(id) { Name = "Nome Antigo" };
+            context.PreEntityImages["preimage"] = new Conta(id) { Nome = "Nome Antigo" };
 
             harness.Execute<RegistrarMudancaNomePlugin>(context);
 

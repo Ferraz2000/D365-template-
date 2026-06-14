@@ -141,6 +141,13 @@ namespace Template.Plugins.Tests.Fakes
                 case ConditionOperator.Equal: return Equals(actual, First());
                 case ConditionOperator.NotEqual: return !Equals(actual, First());
                 case ConditionOperator.In: return c.Values.Select(Normalize).Contains(actual);
+                case ConditionOperator.ContainValues:
+                {
+                    var col = (e.Contains(c.AttributeName) ? e[c.AttributeName] : null) as OptionSetValueCollection;
+                    if (col == null) return false;
+                    var possui = col.Select(o => o.Value).ToList();
+                    return c.Values.Select(v => Convert.ToInt32(Normalize(v))).Any(possui.Contains);
+                }
                 case ConditionOperator.Like: return Like(actual as string, c.Values.FirstOrDefault() as string);
                 case ConditionOperator.GreaterThan: return Compare(actual, First()) > 0;
                 case ConditionOperator.GreaterEqual: return Compare(actual, First()) >= 0;

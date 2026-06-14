@@ -10,12 +10,12 @@ em `docs/brain/` (hipocampo).
 3. Este arquivo (paths + comandos).
 
 ## Estrutura (o que mora onde)
-- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.** Simples:
-  - `Plugins/<Entidade>/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. Gritam o domínio (Account, Opportunity, Case…).
-  - `Services/` — **regra de negócio**, classe concreta (`AccountService`). **Só quando a regra cresce/mexe em dados** — regra trivial fica no plugin.
-  - `Repositories/` — **acesso a dados por entidade**; **as queries moram aqui** (`AccountRepository.GetByName`, etc.). Classes concretas.
-  - `Model/` — entidades tipadas (early-bound): `public class Account : Entity` (`account.Name`, não `entity["name"]`).
-  - `Common/` — `PluginBase`, `LocalPluginContext`, `Guard`, constantes. **Sem interfaces e sem DI** (dependências montadas com `new`).
+- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.** **Domínio em PT, infra em EN.**
+  - `Plugins/<Entidade>/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. Gritam o domínio (Conta, Contato…).
+  - `Services/` — **regra de negócio**, classe concreta (`ContaServico`). **Só quando a regra cresce/mexe em dados** — regra trivial fica no plugin.
+  - `Repositories/` — **acesso a dados por entidade**; **as queries moram aqui** (`ContaRepositorio.ObterPorNome`, etc.). Classes concretas.
+  - `Model/` — entidades tipadas (early-bound): `public class Conta : Entity` (`conta.Nome`, não `entity["name"]`).
+  - `Common/` — `PluginBase`, `LocalPluginContext`, `Guard`, constantes (infra, em EN). **Sem interfaces e sem DI** (dependências montadas com `new`).
 - `src/webresources/<prefix>/` — TypeScript por feature → build `dist/` (JS que sobe).
 - `src/pcf/` — controles PCF (source).
 - `docs/architecture/` — **o padrão escrito** (fonte da verdade do design).

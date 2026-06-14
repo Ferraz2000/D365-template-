@@ -1,10 +1,9 @@
-using System;
 using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Account = Template.Plugins.Model.Account;
-using CalcularScoreContaPlugin = Template.Plugins.Plugins.Account.CalcularScoreContaPlugin;
+using Conta = Template.Plugins.Model.Conta;
+using CalcularScoreContaPlugin = Template.Plugins.Plugins.Conta.CalcularScoreContaPlugin;
 
 namespace Template.Plugins.Tests
 {
@@ -14,10 +13,10 @@ namespace Template.Plugins.Tests
         public void Custom_message_calcula_score_e_devolve_no_output()
         {
             var harness = new PluginHarness();
-            var accountId = harness.Service.Create(new Account { Revenue = 2_000_000m, NumberOfEmployees = 150 });
+            var contaId = harness.Service.Create(new Conta { Receita = 2_000_000m, NumeroDeFuncionarios = 150 });
 
             var context = harness.Context(CustomMessages.CalcularScoreConta, Stages.MainOperation);
-            context.InputParameters["AccountId"] = new EntityReference(Account.EntityLogicalName, accountId);
+            context.InputParameters["AccountId"] = new EntityReference(Conta.EntityLogicalName, contaId);
 
             harness.Execute<CalcularScoreContaPlugin>(context);
 

@@ -2,8 +2,8 @@ using System;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Account = Template.Plugins.Model.Account;
-using AtualizarNomePlugin = Template.Plugins.Plugins.Account.AtualizarNomePlugin;
+using Conta = Template.Plugins.Model.Conta;
+using AtualizarNomePlugin = Template.Plugins.Plugins.Conta.AtualizarNomePlugin;
 
 namespace Template.Plugins.Tests
 {
@@ -13,14 +13,14 @@ namespace Template.Plugins.Tests
         public void Normaliza_o_nome_da_conta()
         {
             var harness = new PluginHarness();
-            var target = new Account(Guid.NewGuid()) { Name = "  Acme  " };
+            var target = new Conta(Guid.NewGuid()) { Nome = "  Acme  " };
 
-            var context = harness.Context(Messages.Update, Stages.PreOperation, Account.EntityLogicalName);
+            var context = harness.Context(Messages.Update, Stages.PreOperation, Conta.EntityLogicalName);
             context.InputParameters["Target"] = target;
 
             harness.Execute<AtualizarNomePlugin>(context);
 
-            Assert.Equal("Acme", target.Name);
+            Assert.Equal("Acme", target.Nome);
         }
     }
 }
