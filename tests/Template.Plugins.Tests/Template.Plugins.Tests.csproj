@@ -1,11 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    Testes unitários do assembly de plugins.
-    Mesmo TFM do projeto testado (net462). FakeXrmEasy simula o Dataverse e o pipeline.
-
-    FakeXrmEasy.9 = linha 1.x (SDK 9 / Dataverse). A v1 é MIT; v2/v3 exigem chave de
-    licença. Ajuste o pacote/versão conforme sua licença — ver docs/architecture/testing.md.
+    Testes unitários do assembly de plugins (net462). Sem dependência externa de mock:
+    o harness em Fakes/FakeHarness.cs simula o pipeline e o IOrganizationService.
+    Inclui testes de arquitetura (regras de dependência via reflection).
   -->
   <PropertyGroup>
     <TargetFramework>net462</TargetFramework>
@@ -27,6 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Integração HTTP nos testes (ClienteRest). -->
+    <Reference Include="System.Net.Http" />
     <ProjectReference Include="..\..\src\plugins\Template.Plugins\Template.Plugins.csproj" />
   </ItemGroup>
 

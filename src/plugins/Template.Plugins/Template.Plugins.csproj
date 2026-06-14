@@ -19,6 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Integração HTTP (REST) — assembly do framework. -->
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- SDK do Dataverse para plugins. Versão fixada por boa prática de ALM. -->
     <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.49" />
     <!-- Permite compilar net462 fora do Windows (reference assemblies). Não vai pro output. -->

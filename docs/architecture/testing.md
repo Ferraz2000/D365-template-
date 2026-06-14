@@ -12,7 +12,11 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
 - Padrão: Arrange (montar Target tipado + contexto) → Act (`harness.Execute<TPlugin>`) → Assert.
 - Cada camada testa isolada: **Plugins** (via `harness`), **Services** (regra, sem pipeline),
   **Repositories** (queries via fake `IOrganizationService`). Classes concretas → testa com `new`.
-- Cobertos: model (`Conta`), `ContaRepositorio` (queries), `ContaServico`, e os plugins (pré/pós/PreImage/custom message/anti-loop).
+- Cobertos: model (`Conta`), `ContaRepositorio` (queries), `ContaServico`, plugins (pré/pós/PreImage/custom message/anti-loop) e integrações.
+- **Integrações**: `ClienteRest` testado com `HttpMessageHandler` falso (sem rede); Service Bus com `IServiceEndpointNotificationService` falso.
+- **Testes de arquitetura** (`Arquitetura/ArquiteturaTests.cs`): regras de dependência (Model não depende de
+  Services/Repositories/Plugins; Repositories/Services não dependem de Plugins) e convenções (plugins `sealed`,
+  herdam `PluginBase`, terminam em `Plugin`). Via reflection — sem dependência nova.
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -36,7 +40,7 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 20 testes, 0 falhas |
+| **C# (net462, via Mono)** | ✅ 28 testes, 0 falhas |
 | **TypeScript (Jest)** | ✅ 5 testes, 2 suítes |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)

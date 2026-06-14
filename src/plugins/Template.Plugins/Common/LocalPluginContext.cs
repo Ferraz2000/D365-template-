@@ -10,6 +10,8 @@ namespace Template.Plugins.Common
     /// </summary>
     public sealed class LocalPluginContext
     {
+        private readonly IServiceProvider _serviceProvider;
+
         public IPluginExecutionContext PluginContext { get; }
         public ITracingService Tracing { get; }
 
@@ -22,6 +24,7 @@ namespace Template.Plugins.Common
         public LocalPluginContext(IServiceProvider serviceProvider)
         {
             Guard.AgainstNull(serviceProvider, nameof(serviceProvider));
+            _serviceProvider = serviceProvider;
 
             PluginContext = (IPluginExecutionContext)serviceProvider.GetService(typeof(IPluginExecutionContext));
             Tracing = (ITracingService)serviceProvider.GetService(typeof(ITracingService));
@@ -30,6 +33,14 @@ namespace Template.Plugins.Common
             UserService = factory.CreateOrganizationService(PluginContext.UserId);
             SystemService = factory.CreateOrganizationService(null);
         }
+
+        /// <summary>Serviço de notificação (Azure Service Bus / ServiceEndpoint) para integração desacoplada.</summary>
+        public IServiceEndpointNotificationService NotificationService =>
+            (IServiceEndpointNotificationService)_serviceProvider.GetService(typeof(IServiceEndpointNotificationService));
+
+        /// <summary>Publica o contexto da operação numa fila do Service Bus (ServiceEndpoint).</summary>
+        public string PostarNaFila(Guid serviceEndpointId) =>
+            NotificationService.Execute(new EntityReference("serviceendpoint", serviceEndpointId), PluginContext);
 
         // ---- atalhos do pipeline ----
         public string MessageName => PluginContext.MessageName;

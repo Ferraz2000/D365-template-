@@ -24,8 +24,19 @@ src/plugins/<Pub>.Plugins/
 │   ├── ContaRepositorio.cs / ContatoRepositorio.cs
 ├── Model/                               # entidades tipadas (early-bound)
 │   ├── Conta.cs / Contato.cs / ContaEnums.cs
+├── Integracao/ClienteRest.cs           # cliente HTTP (infra, HttpClient injetável)
 └── Common/                              # PluginBase, LocalPluginContext, Guard, Constants
 ```
+
+## Integrações
+| Padrão | Plugin | Como |
+|---|---|---|
+| **Service Bus (recomendado, desacoplado)** | `PublicarEventoContaPlugin` | `context.PostarNaFila(serviceEndpointId)` → posta o contexto na fila via `IServiceEndpointNotificationService` |
+| **HTTP REST (async)** | `IntegracaoPlugin` | `new ClienteRest(httpClient).PostJson(url, json)` |
+
+- **Nunca** chamar serviço externo em step **síncrono** (prende a transação) — use **async**.
+- `ClienteRest` recebe o `HttpClient` por construtor → testável com handler falso, sem rede.
+- Preferir a fila (Service Bus) ao HTTP direto: resiliente a falhas e não acopla o CRM ao externo.
 
 ## Gatilhos (exemplos em `Plugins/Conta/`)
 | Gatilho | Stage | Plugin | Observação |

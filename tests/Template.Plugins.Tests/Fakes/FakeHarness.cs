@@ -16,14 +16,25 @@ namespace Template.Plugins.Tests.Fakes
     {
         public FakeOrganizationService Service { get; } = new FakeOrganizationService();
         public FakeTracingService Tracing { get; } = new FakeTracingService();
+        public FakeNotificationService Notifications { get; } = new FakeNotificationService();
 
         public FakePluginContext Context(string message, int stage, string primaryEntityName = null) =>
             new FakePluginContext { MessageName = message, Stage = stage, PrimaryEntityName = primaryEntityName };
 
         public void Execute<TPlugin>(FakePluginContext context) where TPlugin : IPlugin, new()
         {
-            var provider = new FakeServiceProvider(context, Tracing, new FakeOrganizationServiceFactory(Service));
+            var provider = new FakeServiceProvider(context, Tracing, new FakeOrganizationServiceFactory(Service), Notifications);
             new TPlugin().Execute(provider);
+        }
+    }
+
+    public sealed class FakeNotificationService : IServiceEndpointNotificationService
+    {
+        public int Chamadas { get; private set; }
+        public string Execute(EntityReference serviceEndpoint, IExecutionContext context)
+        {
+            Chamadas++;
+            return "ok";
         }
     }
 
@@ -32,12 +43,14 @@ namespace Template.Plugins.Tests.Fakes
         private readonly IPluginExecutionContext _context;
         private readonly ITracingService _tracing;
         private readonly IOrganizationServiceFactory _factory;
+        private readonly IServiceEndpointNotificationService _notifications;
 
-        public FakeServiceProvider(IPluginExecutionContext context, ITracingService tracing, IOrganizationServiceFactory factory)
+        public FakeServiceProvider(IPluginExecutionContext context, ITracingService tracing, IOrganizationServiceFactory factory, IServiceEndpointNotificationService notifications)
         {
             _context = context;
             _tracing = tracing;
             _factory = factory;
+            _notifications = notifications;
         }
 
         public object GetService(Type serviceType)
@@ -45,6 +58,7 @@ namespace Template.Plugins.Tests.Fakes
             if (serviceType == typeof(IPluginExecutionContext)) return _context;
             if (serviceType == typeof(ITracingService)) return _tracing;
             if (serviceType == typeof(IOrganizationServiceFactory)) return _factory;
+            if (serviceType == typeof(IServiceEndpointNotificationService)) return _notifications;
             return null;
         }
     }
