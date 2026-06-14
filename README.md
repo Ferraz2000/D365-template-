@@ -24,6 +24,10 @@ docs/
 └── brain/                      # memória durável (hipocampo)
 ```
 
+## Reutilizar como template
+**Projeto novo?** `dotnet new install .` → `dotnet new d365ce -n MeuProjeto --prefix ctso`. Ver `TEMPLATE.md`.
+O template **não injeta nada na sua org** — exemplos vêm prontos e inertes; registro de step é opt-in.
+
 ## Por onde começar
 0. **Dev novo?** Comece pelo `CONTRIBUTING.md` (build, test, como adicionar um plugin/feature).
 1. Leia `AGENTS.md` (roteador) e `docs/architecture/`.

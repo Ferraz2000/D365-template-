@@ -1,5 +1,15 @@
 namespace Template.Plugins.Common
 {
+    /// <summary>
+    /// Identidade do publisher. **`Prefixo` é o único lugar com o prefixo de schema custom** —
+    /// todo nome custom (colunas, Custom API, web resources) deriva daqui. Troque em um só ponto
+    /// (ou via `dotnet new ... --prefix ctso`). Schema padrão (name, revenue…) NÃO usa prefixo.
+    /// </summary>
+    public static class Publisher
+    {
+        public const string Prefixo = "tpl";
+    }
+
     /// <summary>Nomes lógicos e estágios — centralizados para evitar "magic strings".</summary>
     public static class Messages
     {
@@ -19,7 +29,7 @@ namespace Template.Plugins.Common
     /// <summary>Nomes de mensagens customizadas (Custom API / Action) do projeto.</summary>
     public static class CustomMessages
     {
-        public const string CalcularScoreConta = "tpl_CalcularScoreConta";
+        public const string CalcularScoreConta = Publisher.Prefixo + "_CalcularScoreConta";
     }
 
     /// <summary>Schema names das tabelas usadas pelos plugins (prefixo do publisher: tpl).</summary>

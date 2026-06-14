@@ -8,6 +8,13 @@
 (`PluginBase`, `LocalPluginContext`, `RepositoryBase`, `Guard`). Os *logical names* (`"account"`,
 `"name"`) são fixos da plataforma e ficam só nos `Fields`.
 
+## Prefixo & registro (opt-in)
+- **Prefixo de schema custom** centralizado em `Common.Publisher.Prefixo` (default `tpl`): colunas
+  custom (`tpl_servicos`, `tpl_resumo`) e Custom API (`tpl_CalcularScoreConta`) derivam dele. Troque
+  em um só ponto (ou via `dotnet new ... --prefix ctso` — ver `TEMPLATE.md`). Campos padrão não usam prefixo.
+- **O template não injeta plugins na org.** Build gera só um DLL; o plugin entra em vigor quando **você
+  registra o step** (Plugin Registration / `pac`), opt-in por plugin. Ver gatilhos abaixo e `TEMPLATE.md`.
+
 ## Princípios
 - **1 plugin = 1 responsabilidade = 1 step.** Herde de `PluginBase` e implemente `Execute(context)`.
 - **Regra trivial fica no plugin.** Cresceu ou mexe em dados → extrai um **service**.

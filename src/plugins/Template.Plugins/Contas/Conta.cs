@@ -108,8 +108,9 @@ namespace Template.Plugins.Contas
             public const string Estado = "statecode";
             public const string NumeroDeFuncionarios = "numberofemployees";
             public const string UltimaEspera = "lastonholdtime";
-            public const string Servicos = "tpl_servicos";   // multi-select
-            public const string Resumo = "tpl_resumo";
+            // Colunas custom: nome = prefixo do publisher + sufixo (prefixo centralizado em Common.Publisher).
+            public const string Servicos = Common.Publisher.Prefixo + "_servicos";   // multi-select
+            public const string Resumo = Common.Publisher.Prefixo + "_resumo";
         }
     }
 }
