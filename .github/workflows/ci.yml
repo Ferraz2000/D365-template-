@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # Gate de documentação/memória: roda o preflight do hipocampo (doc_links,
+  # feature_doc_sync, vault_sync). No PR, GITHUB_BASE_REF resolve o diff range.
+  doc-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # doc-sync precisa do base ref para o diff
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Preflight (doc-sync + vault-sync + doc-links)
+        env:
+          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        run: python3 -m hipocampo.preflight
+
+  # Testes do assembly de plugins. Windows roda net462 nativo (sem Mono) e os
+  # testes de arquitetura (reflection + NetArchTest, este último a nível de IL).
+  testes-csharp:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - run: dotnet test tests/Template.Plugins.Tests --configuration Release
+
+  # Testes de web resources e PCF (TypeScript / Jest).
+  testes-typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Web resources
+        working-directory: src/webresources/tpl
+        run: npm ci && npm test
+      - name: PCF
+        working-directory: src/pcf
+        run: npm ci && npm test

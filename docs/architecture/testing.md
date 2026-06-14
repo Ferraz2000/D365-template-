@@ -14,9 +14,15 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
   **Repositories** (queries via fake `IOrganizationService`). Classes concretas → testa com `new`.
 - Cobertos: model (`Conta`), `ContaRepositorio` (queries), `ContaServico`, plugins (pré/pós/PreImage/custom message/anti-loop) e integrações.
 - **Integrações**: `ClienteRest` testado com `HttpMessageHandler` falso (sem rede); Service Bus com `IServiceEndpointNotificationService` falso.
-- **Testes de arquitetura** (`Arquitetura/ArquiteturaTests.cs`, vertical slice): `Common`/`Integracao` não dependem
+- **Testes de arquitetura** (`Arquitetura/`, vertical slice): `Common`/`Integracao` não dependem
   de feature; `Contatos` não depende de `Contas`; plugins são `sealed`/herdam `PluginBase`/terminam em `Plugin` e
-  **não são referenciados** (pontos de entrada); repositórios herdam `RepositoryBase`. Via reflection — sem dependência nova.
+  **não são referenciados** (pontos de entrada); repositórios herdam `RepositoryBase`.
+  - `ArquiteturaTests.cs` — via **reflection** (nível de API), roda em qualquer lugar.
+  - `ArquiteturaNetArchTests.cs` — via **NetArchTest/IL** (pega corpo de método); **pula no Mono**, roda no **CI Windows**.
+
+## CI (GitHub Actions — `.github/workflows/ci.yml`)
+No PR: **doc-sync** (preflight, ubuntu/python), **testes C#** (windows, `dotnet test` net462 nativo),
+**testes TS** (ubuntu, web resources + PCF). É o espelho do gate local, mas que ninguém pula com `--no-verify`.
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -40,7 +46,7 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 40 testes, 0 falhas |
+| **C# (net462, via Mono)** | ✅ 43 testes, 0 falhas (3 de arquitetura IL pulam no Mono → rodam no CI Windows) |
 | **TypeScript (Jest)** | ✅ 11 testes (web resources 9 + PCF 2) |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)

@@ -24,6 +24,7 @@ docs/
 ```
 
 ## Por onde começar
+0. **Dev novo?** Comece pelo `CONTRIBUTING.md` (build, test, como adicionar um plugin/feature).
 1. Leia `AGENTS.md` (roteador) e `docs/architecture/`.
 2. Renomeie o placeholder **`Template`/`tpl`** para o publisher/prefixo real (o prefixo é praticamente imutável).
 3. Plugins: `dotnet build src/plugins/Template.Plugins` · testes: `dotnet test tests/Template.Plugins.Tests`.
