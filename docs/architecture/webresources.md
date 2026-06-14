@@ -18,8 +18,8 @@ src/webresources/tpl/
 │   ├── format.ts           # lógica pura (sem Xrm) — testável
 │   ├── format.test.ts
 │   └── account/
-│       ├── form.ts         # OnLoad fino → delega a format
-│       └── form.test.ts    # mocka formContext mínimo
+│       ├── form.ts         # handlers finos: onLoad / onChangeNome / onSave → delegam a format
+│       └── form.test.ts    # xrm-mock (form + save event)
 └── dist/                   # bundle IIFE (gitignored; é o que sobe)
 ```
 
@@ -37,6 +37,7 @@ fáceis de testar com Jest. Os entry-points de formulário chamam essas funçõe
 ## Convenções
 - 1 entry-point por formulário/feature; funções de evento exportadas.
 - Regra de negócio em módulo puro (sem `Xrm`) → testar sem mock pesado.
-- Registro no D365: OnLoad → `Tpl.onLoad` (nome do global do bundle).
+- Registro no D365 (global do bundle `Tpl`): **OnLoad** → `Tpl.onLoad`; **OnChange** (name) → `Tpl.onChangeNome`;
+  **OnSave** → `Tpl.onSave` (pode cancelar o save com `getEventArgs().preventDefault()`).
 - Build: `npm ci && npm run build` → `dist/` (não versionado). Testes: `npm test` (ver `testing.md`).
 - Nome do web resource no D365: `tpl_/<feature>/<arquivo>.js`.
