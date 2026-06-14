@@ -1,12 +1,14 @@
 using System;
 using Microsoft.Xrm.Sdk;
 using Template.Plugins.Repositories;
+using Template.Plugins.Services;
 
 namespace Template.Plugins.Common
 {
     /// <summary>
-    /// Contexto local de um plugin: agrega os serviços do pipeline e resolve
-    /// dependências (IoC básico). Vive só durante o Execute — sem estado entre execuções.
+    /// Contexto local de um plugin: agrega os serviços do pipeline, dá acesso ao Target/Images
+    /// tipados e resolve dependências (composition root / IoC básico — sem framework de DI no sandbox).
+    /// Vive só durante o Execute.
     /// </summary>
     public sealed class LocalPluginContext
     {
@@ -31,6 +33,11 @@ namespace Template.Plugins.Common
             SystemService = factory.CreateOrganizationService(null);
         }
 
+        // ---- atalhos do pipeline ----
+        public string MessageName => PluginContext.MessageName;
+        public int Stage => PluginContext.Stage;
+        public int Depth => PluginContext.Depth;
+
         /// <summary>A entidade-alvo (Target) do step, quando existir.</summary>
         public bool TryGetTarget(out Entity target)
         {
@@ -45,7 +52,7 @@ namespace Template.Plugins.Common
 
         /// <summary>
         /// O Target como entidade tipada (early-bound). <c>ToEntity</c> compartilha o
-        /// AttributeCollection, então alterar a entidade tipada reflete no Target original.
+        /// AttributeCollection, então alterar a entidade tipada reflete no Target (essencial em Pre-Operation).
         /// </summary>
         public bool TryGetTarget<T>(out T target) where T : Entity
         {
@@ -58,22 +65,23 @@ namespace Template.Plugins.Common
             return false;
         }
 
-        public Entity GetPreImage(string alias) =>
-            PluginContext.PreEntityImages.TryGetValue(alias, out var img) ? img : null;
+        public T GetPreImage<T>(string alias) where T : Entity =>
+            PluginContext.PreEntityImages.TryGetValue(alias, out var img) ? img.ToEntity<T>() : null;
 
-        public Entity GetPostImage(string alias) =>
-            PluginContext.PostEntityImages.TryGetValue(alias, out var img) ? img : null;
+        public T GetPostImage<T>(string alias) where T : Entity =>
+            PluginContext.PostEntityImages.TryGetValue(alias, out var img) ? img.ToEntity<T>() : null;
 
         public void Trace(string message) => Tracing?.Trace(message);
 
         /// <summary>
-        /// IoC básico (Clean): plugins resolvem abstrações, nunca instanciam acesso a dados direto.
-        /// Mantido simples de propósito — registre novas dependências aqui.
+        /// Composition root (factory simples): plugins resolvem abstrações; serviços recebem seus
+        /// repositórios por entidade. Sem framework de DI — evita conflitos no sandbox.
         /// </summary>
         public T Resolve<T>() where T : class
         {
-            if (typeof(T) == typeof(IRepository))
-                return (T)(object)new EntityRepository(UserService);
+            if (typeof(T) == typeof(IAccountRepository)) return (T)(object)new AccountRepository(UserService);
+            if (typeof(T) == typeof(IContactRepository)) return (T)(object)new ContactRepository(UserService);
+            if (typeof(T) == typeof(IAccountService)) return (T)(object)new AccountService(new ContactRepository(UserService));
 
             throw new InvalidOperationException($"Sem registro de IoC para {typeof(T).FullName}.");
         }

@@ -10,11 +10,12 @@ em `docs/brain/` (hipocampo).
 3. Este arquivo (paths + comandos).
 
 ## Estrutura (o que mora onde)
-- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.**
-  - `Plugins/<Entidade>/<Acao>Plugin.cs` — handlers finos, **gritam o domínio** (Account, Opportunity, Case…).
+- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.** Camadas:
+  - `Plugins/<Entidade>/<Acao>Plugin.cs` — **fino, sem regra**: registra o step e delega ao service. Gritam o domínio (Account, Opportunity, Case…).
+  - `Services/` — **regra de negócio** (`IAccountService`/`AccountService`). Não conhece o pipeline.
+  - `Repositories/` — **acesso a dados por entidade**; **as queries moram aqui** (`AccountRepository.GetByName`, etc.).
   - `Model/` — entidades tipadas (early-bound): `public class Account : Entity` (`account.Name`, não `entity["name"]`).
-  - `Common/` — `PluginBase`, `LocalPluginContext`, IoC, `Guard`, constantes (cross-cutting).
-  - `Repositories/` — `IRepository` + implementações (acesso a dados atrás de abstração).
+  - `Common/` — `PluginBase` (RegisteredEvents: message/stage/entity), `LocalPluginContext`, `Guard`, constantes.
 - `src/webresources/<prefix>/` — TypeScript por feature → build `dist/` (JS que sobe).
 - `src/pcf/` — controles PCF (source).
 - `docs/architecture/` — **o padrão escrito** (fonte da verdade do design).
@@ -22,10 +23,10 @@ em `docs/brain/` (hipocampo).
 - **Solutions NÃO vivem no repo** — exportadas só como artefato de build (`.gitignore` barra).
 
 ## Regra de dependência (Clean)
-`Plugins/` → depende de **abstrações** (`Common`, `IRepository`). Nunca `IOrganizationService`
-cru dentro de um plugin: acesso a dados só via `IRepository`. `Repositories` e `Common`
-não conhecem `Plugins`. Fluxo numa direção só. Plugin é **fino**: parse do contexto →
-chama a regra → fim. Lógica de negócio fora do `Execute` boilerplate.
+`Plugins → Services → Repositories → IOrganizationService`. Plugin depende de `IAccountService`;
+service depende de `IContactRepository` (abstrações). **Plugin não tem regra de negócio** (só orquestra);
+**regra nos Services**; **query nos Repositories** (por entidade), nunca no plugin/service.
+`Services`/`Repositories`/`Common` não conhecem `Plugins`. Fluxo numa direção só.
 
 ## Convenções
 - **1 plugin por ação**: `Plugins/Account/AtualizarNomePlugin.cs`. Nunca uma classe por

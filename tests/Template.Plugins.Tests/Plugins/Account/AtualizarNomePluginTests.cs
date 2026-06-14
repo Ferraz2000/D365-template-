@@ -10,35 +10,32 @@ namespace Template.Plugins.Tests
     public class AtualizarNomePluginTests
     {
         [Fact]
-        public void Apara_espacos_do_nome_no_pre_operation()
+        public void Executa_no_step_registrado_e_normaliza()
         {
-            // Arrange — entidade tipada (early-bound)
             var harness = new PluginHarness();
             var target = new Account(Guid.NewGuid()) { Name = "  Acme  " };
 
-            var context = harness.Context(Messages.Update, Stages.PreOperation);
+            var context = harness.Context(Messages.Update, Stages.PreOperation, Account.EntityLogicalName);
             context.InputParameters["Target"] = target;
 
-            // Act
             harness.Execute<AtualizarNomePlugin>(context);
 
-            // Assert — ToEntity compartilha os atributos, então a alteração reflete no Target
             Assert.Equal("Acme", target.Name);
         }
 
         [Fact]
-        public void Ignora_quando_nao_ha_nome_no_target()
+        public void Nao_dispara_em_step_diferente()
         {
             var harness = new PluginHarness();
-            var target = new Account(Guid.NewGuid());
+            var target = new Account(Guid.NewGuid()) { Name = "  Acme  " };
 
-            var context = harness.Context(Messages.Update, Stages.PreOperation);
+            // Stage errado (Post em vez de Pre): o PluginBase não casa o evento → handler não roda.
+            var context = harness.Context(Messages.Update, Stages.PostOperation, Account.EntityLogicalName);
             context.InputParameters["Target"] = target;
 
-            var ex = Record.Exception(() => harness.Execute<AtualizarNomePlugin>(context));
+            harness.Execute<AtualizarNomePlugin>(context);
 
-            Assert.Null(ex);
-            Assert.False(target.Contains(Account.Fields.Name));
+            Assert.Equal("  Acme  ", target.Name); // intacto
         }
     }
 }

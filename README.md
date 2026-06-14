@@ -13,7 +13,7 @@ web resources TypeScript e PCF — com **Screaming Architecture + Clean Code** (
 ## Estrutura
 ```
 src/
-├── plugins/Template.Plugins/   # assembly C# — Plugins/ · Common/ · Repositories/
+├── plugins/Template.Plugins/   # assembly C# — Plugins/ · Services/ · Repositories/ · Model/ · Common/
 ├── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
 └── pcf/                         # controles PCF
 tests/
@@ -30,10 +30,10 @@ docs/
 4. Web resources: `cd src/webresources/tpl && npm ci && npm run build` · testes: `npm test`.
 
 ## Convenções de plugin (resumo)
-- `src/plugins/Template.Plugins/Plugins/<Entidade>/<Acao>Plugin.cs` — um arquivo por ação.
-- Herde de `PluginBase`; faça **uma** coisa no `Execute`.
+- `Plugins/<Entidade>/<Acao>Plugin.cs` — **fino**: `RegisterEvent(...)` no construtor + delega ao service. **Sem regra de negócio.**
+- **Regra de negócio** em `Services/`; **queries** em `Repositories/` (por entidade).
 - Use **entidades tipadas** (`Model/`): `context.TryGetTarget<Account>(out var account)` → `account.Name`.
-- Registre cada classe no seu próprio step (mensagem/estágio/entidade).
+- `PluginBase` casa o step por **message + stage + entity**; 1 evento por classe.
 
 ## Memória (hipocampo)
 Sistema de memória versionada e revisada por humano. `/capture` propõe notas, `/search`

@@ -17,8 +17,8 @@ namespace Template.Plugins.Tests.Fakes
         public FakeOrganizationService Service { get; } = new FakeOrganizationService();
         public FakeTracingService Tracing { get; } = new FakeTracingService();
 
-        public FakePluginContext Context(string message, int stage) =>
-            new FakePluginContext { MessageName = message, Stage = stage };
+        public FakePluginContext Context(string message, int stage, string primaryEntityName = null) =>
+            new FakePluginContext { MessageName = message, Stage = stage, PrimaryEntityName = primaryEntityName };
 
         public void Execute<TPlugin>(FakePluginContext context) where TPlugin : IPlugin, new()
         {
@@ -100,9 +100,30 @@ namespace Template.Plugins.Tests.Fakes
 
         public EntityCollection RetrieveMultiple(QueryBase query)
         {
-            var name = (query as QueryExpression)?.EntityName ?? (query as QueryByAttribute)?.EntityName;
-            var items = _store.Values.Where(e => name == null || e.LogicalName == name).Select(Clone).ToList();
-            return new EntityCollection(items);
+            var qe = query as QueryExpression;
+            var name = qe?.EntityName ?? (query as QueryByAttribute)?.EntityName;
+            IEnumerable<Entity> items = _store.Values.Where(e => name == null || e.LogicalName == name);
+            if (qe?.Criteria != null)
+                items = items.Where(e => MatchesFilter(e, qe.Criteria));
+            if (qe != null && qe.TopCount.HasValue)
+                items = items.Take(qe.TopCount.Value);
+            return new EntityCollection(items.Select(Clone).ToList());
+        }
+
+        // Filtro mínimo (Equal/NotEqual + subfiltros AND) — suficiente para testar queries dos repositórios.
+        private static bool MatchesFilter(Entity e, FilterExpression filter)
+        {
+            foreach (var c in filter.Conditions)
+            {
+                var actual = e.Contains(c.AttributeName) ? e[c.AttributeName] : null;
+                var expected = c.Values.Count > 0 ? c.Values[0] : null;
+                var equal = Equals(actual, expected);
+                if (c.Operator == ConditionOperator.Equal && !equal) return false;
+                if (c.Operator == ConditionOperator.NotEqual && equal) return false;
+            }
+            foreach (var sub in filter.Filters)
+                if (!MatchesFilter(e, sub)) return false;
+            return true;
         }
 
         public OrganizationResponse Execute(OrganizationRequest request) => throw new NotSupportedException();

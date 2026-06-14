@@ -1,32 +1,22 @@
-using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
-using Template.Plugins.Model;
-using Template.Plugins.Repositories;
+using Template.Plugins.Services;
 
 namespace Template.Plugins.Plugins.Account
 {
     /// <summary>
-    /// Responsabilidade única: ao mudar o contato principal da conta, propaga o vínculo.
-    /// Usa IRepository (acesso a dados via abstração — nunca IOrganizationService cru) e
-    /// entidades tipadas (early-bound).
-    /// Registro: message=Update, stage=Post-Operation, entity=account, filtro=primarycontactid.
+    /// 1 responsabilidade = 1 step: ao mudar o contato principal, propagar o vínculo.
+    /// Plugin fino — a regra está em <see cref="IAccountService.PropagarContatoPrincipal"/>.
     /// </summary>
     public sealed class AtualizarRelacionamentoPlugin : PluginBase
     {
-        protected override void Execute(LocalPluginContext context)
+        public AtualizarRelacionamentoPlugin()
+            => RegisterEvent(Stages.PostOperation, Messages.Update, Model.Account.EntityLogicalName, OnExecute);
+
+        private void OnExecute(LocalPluginContext context)
         {
             if (!context.TryGetTarget<Model.Account>(out var account)) return;
-            if (account.PrimaryContactId == null) return;
-
-            var repo = context.Resolve<IRepository>();
-
-            // Refletir a conta como "parent" no contato principal.
-            var contato = new Contact(account.PrimaryContactId.Id)
-            {
-                ParentCustomerId = new EntityReference(Model.Account.EntityLogicalName, context.PluginContext.PrimaryEntityId)
-            };
-            repo.Update(contato);
-            context.Trace("Relacionamento conta↔contato atualizado.");
+            account.Id = context.PluginContext.PrimaryEntityId; // garante o Id no Post-Operation
+            context.Resolve<IAccountService>().PropagarContatoPrincipal(account);
         }
     }
 }

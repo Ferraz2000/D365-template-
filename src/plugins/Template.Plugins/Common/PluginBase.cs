@@ -1,24 +1,60 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.Xrm.Sdk;
 
 namespace Template.Plugins.Common
 {
     /// <summary>
-    /// Base de todos os plugins. Cuida do boilerplate (contexto, tracing, tratamento de erro)
-    /// para que cada plugin concreto faça UMA coisa só — como um método.
+    /// Base de todos os plugins. Registra eventos (message + stage + entity) no construtor e,
+    /// no Execute, dispara só o handler que casa com o step atual — mais o boilerplate de
+    /// tracing e tratamento de erro. Convenção: **1 plugin registra 1 evento = 1 step**.
     /// </summary>
     public abstract class PluginBase : IPlugin
     {
+        /// <summary>Config "unsecure" informada no registro do step (opcional).</summary>
+        protected string UnsecureConfig { get; }
+
+        /// <summary>Config "secure" informada no registro do step (opcional).</summary>
+        protected string SecureConfig { get; }
+
+        private readonly Collection<PluginEvent> _events = new Collection<PluginEvent>();
+
+        protected PluginBase() { }
+
+        protected PluginBase(string unsecureConfig, string secureConfig)
+        {
+            UnsecureConfig = unsecureConfig;
+            SecureConfig = secureConfig;
+        }
+
+        /// <summary>
+        /// Registra o evento que este plugin trata. <paramref name="entityLogicalName"/> vazio = qualquer entidade.
+        /// </summary>
+        protected void RegisterEvent(int stage, string message, string entityLogicalName, Action<LocalPluginContext> handler)
+        {
+            Guard.AgainstNull(handler, nameof(handler));
+            _events.Add(new PluginEvent(stage, message, entityLogicalName, handler));
+        }
+
         public void Execute(IServiceProvider serviceProvider)
         {
             Guard.AgainstNull(serviceProvider, nameof(serviceProvider));
-            var ctx = new LocalPluginContext(serviceProvider);
+            var context = new LocalPluginContext(serviceProvider);
+            var p = context.PluginContext;
+
+            var handler = _events.FirstOrDefault(e =>
+                e.Stage == p.Stage &&
+                string.Equals(e.Message, p.MessageName, StringComparison.OrdinalIgnoreCase) &&
+                (string.IsNullOrEmpty(e.EntityLogicalName) ||
+                 string.Equals(e.EntityLogicalName, p.PrimaryEntityName, StringComparison.OrdinalIgnoreCase)));
+
+            if (handler == null) return; // step não casa com nenhum registro — nada a fazer
 
             try
             {
-                ctx.Trace($"[{GetType().Name}] início — message={ctx.PluginContext.MessageName}, stage={ctx.PluginContext.Stage}");
-                Execute(ctx);
-                ctx.Trace($"[{GetType().Name}] fim");
+                context.Trace($"[{GetType().Name}] {p.MessageName}/{p.Stage}/{p.PrimaryEntityName} depth={p.Depth}");
+                handler.Handler(context);
             }
             catch (InvalidPluginExecutionException)
             {
@@ -26,12 +62,25 @@ namespace Template.Plugins.Common
             }
             catch (Exception ex)
             {
-                ctx.Trace($"[{GetType().Name}] erro: {ex}");
+                context.Trace($"[{GetType().Name}] erro: {ex}");
                 throw new InvalidPluginExecutionException($"[{GetType().Name}] falhou: {ex.Message}", ex);
             }
         }
 
-        /// <summary>A única responsabilidade do plugin. Implemente a regra aqui.</summary>
-        protected abstract void Execute(LocalPluginContext context);
+        private sealed class PluginEvent
+        {
+            public PluginEvent(int stage, string message, string entityLogicalName, Action<LocalPluginContext> handler)
+            {
+                Stage = stage;
+                Message = message;
+                EntityLogicalName = entityLogicalName;
+                Handler = handler;
+            }
+
+            public int Stage { get; }
+            public string Message { get; }
+            public string EntityLogicalName { get; }
+            public Action<LocalPluginContext> Handler { get; }
+        }
     }
 }

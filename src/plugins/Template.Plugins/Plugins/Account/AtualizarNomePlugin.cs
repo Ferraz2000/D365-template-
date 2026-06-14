@@ -1,21 +1,21 @@
 using Template.Plugins.Common;
+using Template.Plugins.Services;
 
 namespace Template.Plugins.Plugins.Account
 {
     /// <summary>
-    /// Responsabilidade única: normaliza o nome da conta antes de gravar.
-    /// Registro: message=Update, stage=Pre-Operation, entity=account, filtro=name.
+    /// 1 responsabilidade = 1 step: normalizar o nome da conta.
+    /// O plugin só orquestra (extrai o Target e delega ao service). Sem regra de negócio aqui.
     /// </summary>
     public sealed class AtualizarNomePlugin : PluginBase
     {
-        protected override void Execute(LocalPluginContext context)
+        public AtualizarNomePlugin()
+            => RegisterEvent(Stages.PreOperation, Messages.Update, Model.Account.EntityLogicalName, OnExecute);
+
+        private void OnExecute(LocalPluginContext context)
         {
             if (!context.TryGetTarget<Model.Account>(out var account)) return;
-            if (string.IsNullOrWhiteSpace(account.Name)) return;
-
-            // Pre-Operation: alterar a entidade tipada reflete no Target (AttributeCollection compartilhado).
-            account.Name = account.Name.Trim();
-            context.Trace("Nome da conta normalizado.");
+            context.Resolve<IAccountService>().NormalizarNome(account);
         }
     }
 }

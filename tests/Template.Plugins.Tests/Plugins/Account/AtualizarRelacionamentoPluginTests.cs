@@ -15,7 +15,6 @@ namespace Template.Plugins.Tests
         [Fact]
         public void Propaga_conta_para_o_contato_principal()
         {
-            // Arrange — um contato já existente no "Dataverse" fake
             var harness = new PluginHarness();
             var contatoId = harness.Service.Create(new Contact(Guid.NewGuid()));
 
@@ -25,14 +24,12 @@ namespace Template.Plugins.Tests
                 PrimaryContactId = new EntityReference(Contact.EntityLogicalName, contatoId)
             };
 
-            var context = harness.Context(Messages.Update, Stages.PostOperation);
+            var context = harness.Context(Messages.Update, Stages.PostOperation, Account.EntityLogicalName);
             context.PrimaryEntityId = contaId;
             context.InputParameters["Target"] = target;
 
-            // Act
             harness.Execute<AtualizarRelacionamentoPlugin>(context);
 
-            // Assert — o contato passou a apontar para a conta
             var contato = harness.Service
                 .Retrieve(Contact.EntityLogicalName, contatoId, new ColumnSet(true))
                 .ToEntity<Contact>();
