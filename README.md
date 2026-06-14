@@ -6,8 +6,10 @@ web resources TypeScript — com **Screaming Architecture + Clean Code** (básic
 
 ## Princípios
 - **1 plugin = 1 responsabilidade = 1 step** (cada plugin funciona como um método).
-- Três blocos no assembly: **`Plugins`** (grita o domínio) · **`Common`** · **`Repositories`**.
-- Regra de dependência Clean: plugins dependem de **abstrações** (`IRepository`), nunca de `IOrganizationService` cru.
+- **Vertical slice (Screaming)**: uma pasta/namespace por feature (`Contas/`, `Contatos/`…) reunindo
+  model + repositório + service + plugins. Domínio em **PT**, infra em **EN**.
+- **Sem interfaces e sem DI**: classes concretas montadas com `new`. Regra trivial no plugin; **regra no
+  service, query no repositório**; entidades tipadas (`conta.Nome`, não `entity["..."]`).
 - Repo guarda **só código-fonte + o padrão**. Solutions exportadas do D365 **não** entram (pesam demais).
 
 ## Estrutura
