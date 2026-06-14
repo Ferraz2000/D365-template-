@@ -28,7 +28,7 @@ tags: [knowledge, index, navigation]
 - [integracoes](plugins/integracoes.md) — Service Bus (recomendado) e HTTP com retry, sempre async. Fontes: padroes-plugin, ms-learn-alm.
 
 ## webresources
-- [typescript-esbuild](webresources/typescript-esbuild.md) — TS em módulos ES + esbuild (bundle IIFE) + Jest; PCF testável. Fontes: sessao-decisoes.
+- [typescript-esbuild](webresources/typescript-esbuild.md) — TS em módulos ES + esbuild (bundle IIFE) + Jest. Fontes: sessao-decisoes.
 
 ## alm
 - [solutions-fora-do-repo](alm/solutions-fora-do-repo.md) — só código no repo; solution como artefato managed. Fontes: ms-learn-alm, sessao-decisoes.

@@ -17,7 +17,7 @@ tags: [meta, escopo]
 # Escopo e stack do template
 
 > Template para **D365 Customer Engagement** (Dataverse): plugins C# (net462), web resources
-> TypeScript e PCF. Repo guarda **só código-fonte + o padrão**; solutions exportadas ficam fora.
+> TypeScript. Repo guarda **só código-fonte + o padrão**; solutions exportadas ficam fora.
 
 ## Contexto
 Solutions unpacked pesam e poluem o histórico. O time trabalha por **PR** com **doc-sync gate**.

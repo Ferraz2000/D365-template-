@@ -1,6 +1,6 @@
-# Web Resources & PCF — padrão
+# Web Resources — padrão
 
-> Alvo do doc-sync: mudou `src/webresources/**` ou `src/pcf/**`? Atualize este arquivo no mesmo commit.
+> Alvo do doc-sync: mudou `src/webresources/**`? Atualize este arquivo no mesmo commit.
 
 ## Web resources (TypeScript, módulos ES + bundle)
 - Escritos em **TypeScript** como **módulos ES**, empacotados com **esbuild** em um bundle
@@ -40,10 +40,3 @@ fáceis de testar com Jest. Os entry-points de formulário chamam essas funçõe
 - Registro no D365: OnLoad → `Tpl.onLoad` (nome do global do bundle).
 - Build: `npm ci && npm run build` → `dist/` (não versionado). Testes: `npm test` (ver `testing.md`).
 - Nome do web resource no D365: `tpl_/<feature>/<arquivo>.js`.
-
-## PCF (`src/pcf/`)
-- Controles de código (Power Apps Component Framework) em TypeScript.
-- Criados com `pac pcf init`; build com `npm run build`.
-- **Lógica pura testável** em `src/*.ts` (ex.: `logic.ts` → `rotuloEstrelas`), com Jest (`npm test`) —
-  o controle real (`init`/`updateView`) delega a essas funções.
-- Empacotados na solution no release (artefato de build, fora do git).

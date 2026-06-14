@@ -1,11 +1,11 @@
 # Contribuindo — guia do dev (júnior-friendly)
 
-Este template é **D365 Customer Engagement**: plugins C# (net462), web resources TypeScript e PCF.
+Este template é **D365 Customer Engagement**: plugins C# (net462), web resources TypeScript.
 Arquitetura **vertical slice (Screaming)**, domínio em PT, infra em EN, **sem interfaces e sem DI**.
 
 ## Pré-requisitos
 - **.NET SDK 8** (compila o assembly net462 com reference assemblies).
-- **Node 20** (web resources / PCF).
+- **Node 20** (web resources).
 - **Power Platform CLI (`pac`)** para registrar/empacotar (deploy).
 - Windows para rodar a suíte C# com `dotnet test` (em Linux, via Mono — ver `docs/architecture/testing.md`).
 
@@ -17,9 +17,6 @@ dotnet test  tests/Template.Plugins.Tests        # 43 testes (inclui arquitetura
 
 # Web resources (TypeScript)
 cd src/webresources/tpl && npm ci && npm test && npm run build
-
-# PCF
-cd src/pcf && npm ci && npm test
 ```
 
 ## Como adicionar um plugin novo (passo a passo)

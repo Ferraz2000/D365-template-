@@ -80,7 +80,3 @@ name = "webresources"
 paths = ["src/webresources/**"]
 docs = ["docs/architecture/webresources.md"]
 
-[[doc_sync]]
-name = "pcf"
-paths = ["src/pcf/**"]
-docs = ["docs/architecture/webresources.md"]

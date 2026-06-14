@@ -27,6 +27,5 @@
 ## Como o código-fonte se relaciona com a solution
 - `src/plugins/` compila um **assembly** → registrado como componente da solution.
 - `src/webresources/` compila TS→JS → web resources da solution.
-- `src/pcf/` → controles PCF da solution.
 - Na hora do release: `pac solution export`/`pack managed` empacota tudo. Esse pacote é
   artefato de build (fora do git).

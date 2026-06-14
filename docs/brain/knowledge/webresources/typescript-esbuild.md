@@ -22,7 +22,6 @@ tags: [webresources, typescript]
 ## A decisão / conceito
 - `src/*.ts` (lógica pura, ex.: `validacao`, `format`) → testável sem `Xrm`.
 - Entry-points de formulário finos delegam à lógica pura. Registro no D365: `Tpl.onLoad`.
-- **PCF** segue o mesmo espírito: lógica pura testável (`pac pcf init` para o controle real).
 
 ## Relacionadas
 - [[escopo-e-stack]]

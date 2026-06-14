@@ -22,7 +22,7 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
 
 ## CI (GitHub Actions — `.github/workflows/ci.yml`)
 No PR: **doc-sync** (preflight, ubuntu/python), **testes C#** (windows, `dotnet test` net462 nativo),
-**testes TS** (ubuntu, web resources + PCF). É o espelho do gate local, mas que ninguém pula com `--no-verify`.
+**testes TS** (ubuntu, web resources). É o espelho do gate local, mas que ninguém pula com `--no-verify`.
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -47,7 +47,7 @@ npm ci && npm test && npm run build
 | Suíte | Resultado |
 |---|---|
 | **C# (net462, via Mono)** | ✅ 43 testes, 0 falhas (3 de arquitetura IL pulam no Mono → rodam no CI Windows) |
-| **TypeScript (Jest)** | ✅ 11 testes (web resources 9 + PCF 2) |
+| **TypeScript (Jest)** | ✅ 9 testes (web resources) |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)
 > e **Mono** (executa net462 em Linux). Em dev Windows / CI, use `dotnet test` direto.

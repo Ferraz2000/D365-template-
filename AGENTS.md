@@ -1,7 +1,7 @@
 # AGENTS.md — roteador do projeto (D365 CE template)
 
 Projeto **template para Dynamics 365 Customer Engagement** (Dataverse): plugins C#,
-web resources TypeScript e PCF. Arquitetura **Screaming + Clean**, básica. Memória
+web resources TypeScript. Arquitetura **Screaming + Clean**, básica. Memória
 em `docs/brain/` (hipocampo).
 
 ## Ordem de leitura (sempre)
@@ -17,7 +17,6 @@ em `docs/brain/` (hipocampo).
   - `Common/` — `PluginBase`, `LocalPluginContext`, `RepositoryBase`, `Guard`, constantes (infra, EN).
   - Regras: `Plugins` herdam `PluginBase`; entidades tipadas (`conta.Nome`, não `entity["name"]`); query só no repositório; **sem interfaces e sem DI** (`new`). `Common`/`Integracao` não dependem de feature; `Contatos` não depende de `Contas`.
 - `src/webresources/<prefix>/` — TypeScript por feature → build `dist/` (JS que sobe).
-- `src/pcf/` — controles PCF (source).
 - `docs/architecture/` — **o padrão escrito** (fonte da verdade do design).
 - `docs/brain/` — vault de conhecimento (memória durável).
 - **Solutions NÃO vivem no repo** — exportadas só como artefato de build (`.gitignore` barra).
@@ -45,7 +44,7 @@ não conhecem `Plugins`.
 ## Fluxo de trabalho (team)
 - Trabalhe em branch de feature → **PR** para `main`. Sem commit direto em `main`.
 - Sugestão: **proteger** `main` e a pasta do vault (`docs/brain/`) com review obrigatório.
-- **Doc-sync gate** (pre-commit): mudou `src/plugins/**`, `src/webresources/**` ou `src/pcf/**`?
+- **Doc-sync gate** (pre-commit): mudou `src/plugins/**` ou `src/webresources/**`?
   Atualize o doc correspondente em `docs/architecture/` **no mesmo commit**. Não use
   `git commit --no-verify` sem autorização explícita.
 

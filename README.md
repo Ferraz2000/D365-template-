@@ -1,7 +1,7 @@
 # Template D365 Customer Engagement
 
 Template de projeto para **Dynamics 365 Customer Engagement** (Dataverse): plugins C#,
-web resources TypeScript e PCF — com **Screaming Architecture + Clean Code** (básica) e
+web resources TypeScript — com **Screaming Architecture + Clean Code** (básica) e
 **memória de projeto** (hipocampo).
 
 ## Princípios
@@ -14,8 +14,7 @@ web resources TypeScript e PCF — com **Screaming Architecture + Clean Code** (
 ```
 src/
 ├── plugins/Template.Plugins/   # assembly C# (vertical slice) — Contas/ · Contatos/ · Integracao/ · Common/
-├── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
-└── pcf/                         # controles PCF
+└── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
 tests/
 └── Template.Plugins.Tests/     # xUnit + harness de fakes no repo (sem dependência externa)
 docs/

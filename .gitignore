@@ -22,7 +22,7 @@ brain.config.local.toml
 *.pdb
 .vs/
 
-# ── Node / TypeScript (web resources, pcf) ──────────────────────────────────
+# ── Node / TypeScript (web resources) ──────────────────────────────────
 node_modules/
 dist/
 *.tsbuildinfo

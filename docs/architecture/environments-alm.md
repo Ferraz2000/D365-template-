@@ -13,8 +13,8 @@
   (nada de URL/segredo hard-coded).
 
 ## Fluxo de build/release (resumo)
-1. Dev codifica em `src/` (plugins C#, web resources TS, PCF) e registra na solution unmanaged do Dev.
-2. Build dos fontes: `dotnet build` (plugins) e `npm run build` (web resources/PCF).
+1. Dev codifica em `src/` (plugins C#, web resources TS) e registra na solution unmanaged do Dev.
+2. Build dos fontes: `dotnet build` (plugins) e `npm run build` (web resources).
 3. Export da solution: `pac solution export --managed` → `.zip` (artefato, **fora do git** — `.gitignore` barra).
 4. Import managed em Test/UAT/Prod (Power Platform Pipelines / Azure DevOps / GitHub Actions).
 
