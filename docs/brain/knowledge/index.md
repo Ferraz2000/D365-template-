@@ -10,26 +10,25 @@ tags: [knowledge, index, navigation]
 
 # Knowledge — índice de navegação
 
-> **Entry point barato** (padrão Karpathy LLM-wiki). Lista cada
-> `knowledge/<area>/X.md` com 1 linha de what's-it-about + suas fontes. Agentes
-> leem ESTE (~poucos KB) → identificam as páginas relevantes → carregam só essas.
-> Nunca brute-force o vault inteiro.
->
-> Quando ler: a tarefa toca uma das áreas abaixo e não é trivial (decisão
-> arquitetural, mudança de gate de fluxo, mudança cross-camada). Tarefas de código
-> rotineiras seguem skill/doc oficial — o index é entry point, não obrigação
-> universal.
->
-> Como manter: atualizado pelo `/capture` quando cria/move página. O validator
-> `vault_sync` enforça consistência (página sem entry → FAIL; entry sem arquivo →
-> FAIL).
-
-<!--
-Áreas e entries aparecem aqui conforme o conhecimento é capturado. 1 linha por página:
+> **Entry point barato** (padrão Karpathy LLM-wiki). Cada página abaixo tem 1 linha de
+> what's-it-about + suas fontes. Agentes leem ESTE → carregam só as páginas relevantes.
+> Nunca brute-force o vault inteiro. Mantido pelo `/capture`; `vault_sync` enforça consistência.
 
 ## meta
-- [alguma-decisao](meta/alguma-decisao.md) — hook de 1 linha. Fontes: raw/sources/<arquivo>.md.
+- [escopo-e-stack](meta/escopo-e-stack.md) — escopo do template (só código, PT-BR, team/PR, net462, D365 CE). Fontes: raw/sources/2026-06-14-sessao-decisoes.md.
 
 ## architecture
-- [algum-padrao](architecture/algum-padrao.md) — hook de 1 linha. Fontes: ...
--->
+- [vertical-slice-screaming](architecture/vertical-slice-screaming.md) — assembly por feature (namespace = feature) + regra de dependência. Fontes: sessao-decisoes, padroes-plugin.
+- [dominio-pt-infra-en](architecture/dominio-pt-infra-en.md) — domínio em PT, infra em EN; logical names só nos Fields. Fontes: sessao-decisoes.
+- [sem-interfaces-sem-di](architecture/sem-interfaces-sem-di.md) — classes concretas, dependências com `new`; júnior-friendly. Fontes: sessao-decisoes, padroes-plugin.
+- [testes](architecture/testes.md) — harness próprio (sem FakeXrmEasy), net462 via Mono, testes de arquitetura. Fontes: sessao-decisoes.
+
+## plugins
+- [padroes-de-plugin](plugins/padroes-de-plugin.md) — 1 plugin = 1 step, early-bound, gatilhos (pre/post/preimage/custom/anti-loop). Fontes: padroes-plugin, sessao-decisoes.
+- [integracoes](plugins/integracoes.md) — Service Bus (recomendado) e HTTP com retry, sempre async. Fontes: padroes-plugin, ms-learn-alm.
+
+## webresources
+- [typescript-esbuild](webresources/typescript-esbuild.md) — TS em módulos ES + esbuild (bundle IIFE) + Jest; PCF testável. Fontes: sessao-decisoes.
+
+## alm
+- [solutions-fora-do-repo](alm/solutions-fora-do-repo.md) — só código no repo; solution como artefato managed. Fontes: ms-learn-alm, sessao-decisoes.

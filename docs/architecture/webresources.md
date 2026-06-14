@@ -23,6 +23,8 @@ src/webresources/tpl/
 └── dist/                   # bundle IIFE (gitignored; é o que sobe)
 ```
 
+> Roteador local: `src/webresources/tpl/AGENTS.md` resume as regras desta pasta.
+
 ## Validações (módulos puros)
 Regras de validação em **módulos puros** (`src/validacao.ts`: `emailValido`, `cnpjValido`) — sem `Xrm`,
 fáceis de testar com Jest. Os entry-points de formulário chamam essas funções.

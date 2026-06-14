@@ -33,6 +33,9 @@ Regra entre features: dependência **numa direção** (`Contas → Contatos`); `
 não dependem de feature nenhuma. As camadas (model/repo/service/plugin) viram **arquivos** dentro
 da feature — a separação é por convenção (e pelos testes de arquitetura).
 
+Cada feature tem um **`AGENTS.md` local** (`Contas/AGENTS.md`, `Contatos/AGENTS.md`) com as regras
+da feature, além do roteador raiz e deste doc.
+
 ## Integrações
 | Padrão | Plugin | Como |
 |---|---|---|

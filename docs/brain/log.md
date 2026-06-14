@@ -10,3 +10,13 @@ Formato: `## [AAAA-MM-DD] <tipo> | <título>` e uma linha opcional com links.
 ## [2026-06-12] ingest | Pesquisa de frameworks de memória de agentes
 Gravado raw/sources/2026-06-12-....md; tocou knowledge/meta/....md.
 -->
+
+## [2026-06-14] decisão | Template D365 CE: vertical slice (Screaming), PT/EN, sem interfaces
+Decisões registradas em adrs/0001..0005 e knowledge/{architecture,plugins,webresources,alm,meta}.
+Fonte: raw/sources/2026-06-14-sessao-decisoes.md.
+
+## [2026-06-14] decisão | Testes com harness próprio (FakeXrmEasy crasha no Mono); net462 via Mono
+Ver knowledge/architecture/testes.md (ADR-0004).
+
+## [2026-06-14] decisão | Integração async: Service Bus (recomendado) e HTTP com retry
+Ver knowledge/plugins/integracoes.md.
