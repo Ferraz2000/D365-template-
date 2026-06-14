@@ -4,8 +4,8 @@ using Template.Plugins.Model;
 
 namespace Template.Plugins.Repositories
 {
-    /// <summary>Implementação do acesso a dados de <see cref="Contact"/>.</summary>
-    public sealed class ContactRepository : RepositoryBase, IContactRepository
+    /// <summary>Acesso a dados de <c>contact</c>. As queries de contato ficam aqui.</summary>
+    public sealed class ContactRepository : RepositoryBase
     {
         public ContactRepository(IOrganizationService service) : base(service) { }
 

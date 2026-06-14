@@ -30,10 +30,10 @@ docs/
 4. Web resources: `cd src/webresources/tpl && npm ci && npm run build` · testes: `npm test`.
 
 ## Convenções de plugin (resumo)
-- `Plugins/<Entidade>/<Acao>Plugin.cs` — **fino**: `RegisterEvent(...)` no construtor + delega ao service. **Sem regra de negócio.**
-- **Regra de negócio** em `Services/`; **queries** em `Repositories/` (por entidade).
+- `Plugins/<Entidade>/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. 1 step por classe.
+- **Regra trivial no plugin**; quando cresce/mexe em dados → `Services/`. **Queries** sempre em `Repositories/` (por entidade).
 - Use **entidades tipadas** (`Model/`): `context.TryGetTarget<Account>(out var account)` → `account.Name`.
-- `PluginBase` casa o step por **message + stage + entity**; 1 evento por classe.
+- **Sem interfaces e sem DI**: classes concretas, dependências com `new` (ex.: `new AccountService(new ContactRepository(ctx.UserService))`).
 
 ## Memória (hipocampo)
 Sistema de memória versionada e revisada por humano. `/capture` propõe notas, `/search`

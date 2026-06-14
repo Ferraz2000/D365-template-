@@ -6,8 +6,8 @@ using Template.Plugins.Model;
 
 namespace Template.Plugins.Repositories
 {
-    /// <summary>Implementação do acesso a dados de <see cref="Account"/>.</summary>
-    public sealed class AccountRepository : RepositoryBase, IAccountRepository
+    /// <summary>Acesso a dados de <c>account</c>. As queries da conta ficam aqui (não no service/plugin).</summary>
+    public sealed class AccountRepository : RepositoryBase
     {
         public AccountRepository(IOrganizationService service) : base(service) { }
 
@@ -17,7 +17,6 @@ namespace Template.Plugins.Repositories
 
         public Account GetByName(string name)
         {
-            // Query (QueryExpression) encapsulada no repositório.
             var query = new QueryExpression(Account.EntityLogicalName)
             {
                 ColumnSet = new ColumnSet(Account.Fields.Name, Account.Fields.PrimaryContactId),

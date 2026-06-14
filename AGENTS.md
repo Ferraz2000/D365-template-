@@ -10,23 +10,23 @@ em `docs/brain/` (hipocampo).
 3. Este arquivo (paths + comandos).
 
 ## Estrutura (o que mora onde)
-- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.** Camadas:
-  - `Plugins/<Entidade>/<Acao>Plugin.cs` — **fino, sem regra**: registra o step e delega ao service. Gritam o domínio (Account, Opportunity, Case…).
-  - `Services/` — **regra de negócio** (`IAccountService`/`AccountService`). Não conhece o pipeline.
-  - `Repositories/` — **acesso a dados por entidade**; **as queries moram aqui** (`AccountRepository.GetByName`, etc.).
+- `src/plugins/<Pub>.Plugins/` — assembly C#. **1 plugin = 1 responsabilidade = 1 step.** Simples:
+  - `Plugins/<Entidade>/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. Gritam o domínio (Account, Opportunity, Case…).
+  - `Services/` — **regra de negócio**, classe concreta (`AccountService`). **Só quando a regra cresce/mexe em dados** — regra trivial fica no plugin.
+  - `Repositories/` — **acesso a dados por entidade**; **as queries moram aqui** (`AccountRepository.GetByName`, etc.). Classes concretas.
   - `Model/` — entidades tipadas (early-bound): `public class Account : Entity` (`account.Name`, não `entity["name"]`).
-  - `Common/` — `PluginBase` (RegisteredEvents: message/stage/entity), `LocalPluginContext`, `Guard`, constantes.
+  - `Common/` — `PluginBase`, `LocalPluginContext`, `Guard`, constantes. **Sem interfaces e sem DI** (dependências montadas com `new`).
 - `src/webresources/<prefix>/` — TypeScript por feature → build `dist/` (JS que sobe).
 - `src/pcf/` — controles PCF (source).
 - `docs/architecture/` — **o padrão escrito** (fonte da verdade do design).
 - `docs/brain/` — vault de conhecimento (memória durável).
 - **Solutions NÃO vivem no repo** — exportadas só como artefato de build (`.gitignore` barra).
 
-## Regra de dependência (Clean)
-`Plugins → Services → Repositories → IOrganizationService`. Plugin depende de `IAccountService`;
-service depende de `IContactRepository` (abstrações). **Plugin não tem regra de negócio** (só orquestra);
-**regra nos Services**; **query nos Repositories** (por entidade), nunca no plugin/service.
-`Services`/`Repositories`/`Common` não conhecem `Plugins`. Fluxo numa direção só.
+## Regra de dependência
+`Plugin → (Service, quando precisa) → Repository (por entidade) → IOrganizationService`.
+**Regra trivial no plugin; regra maior no Service; query sempre no Repository** (nunca no plugin/service).
+Classes concretas montadas com `new` — sem interfaces/DI no sandbox. `Services`/`Repositories`/`Common`
+não conhecem `Plugins`.
 
 ## Convenções
 - **1 plugin por ação**: `Plugins/Account/AtualizarNomePlugin.cs`. Nunca uma classe por

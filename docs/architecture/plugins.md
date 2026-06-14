@@ -1,64 +1,73 @@
-# Arquitetura de Plugins — Screaming + Clean (camadas)
+# Arquitetura de Plugins — Screaming + Clean (simples)
 
 > Alvo do doc-sync: mudou `src/plugins/**`? Atualize este arquivo no mesmo commit.
 
-## Princípios
-- **1 plugin = 1 responsabilidade = 1 step.** Cada plugin registra **um** evento.
-- **O plugin não tem regra de negócio.** Ele só orquestra: extrai o Target e delega ao service.
-- **Regra de negócio nos Services.** **Queries nos Repositories** (por entidade) — nunca no plugin/service.
+## Princípios (fáceis de seguir)
+- **1 plugin = 1 responsabilidade = 1 step.**
+- **Herde de `PluginBase` e implemente `Execute(context)`.** O message/stage/entity é definido no
+  **Plugin Registration** (e documentado no XML da classe).
+- **Regra trivial fica no plugin.** Quando a regra cresce ou mexe em dados → extrai um **service**.
+- **Query sempre num Repository** (por entidade) — nunca no plugin/service.
+- **Sem interfaces e sem framework de DI**: classes concretas, dependências montadas com `new`.
 
 ## Camadas (dentro do assembly)
 ```
 src/plugins/<Pub>.Plugins/
-├── Plugins/<Entidade>/<Acao>Plugin.cs   # FINO: registra o step + delega ao service
-├── Services/                            # REGRA DE NEGÓCIO (sem boilerplate do SDK)
-│   ├── IAccountService.cs / AccountService.cs
-├── Repositories/                        # ACESSO A DADOS — por entidade, queries aqui
+├── Plugins/<Entidade>/<Acao>Plugin.cs   # herda PluginBase, implementa Execute
+├── Services/                            # regra de negócio (só quando precisa) — classe concreta
+│   └── AccountService.cs
+├── Repositories/                        # acesso a dados por entidade; queries aqui
 │   ├── RepositoryBase.cs                #   CRUD comum sobre IOrganizationService
-│   ├── IAccountRepository.cs / AccountRepository.cs   (ex.: GetByName via QueryExpression)
-│   └── IContactRepository.cs / ContactRepository.cs
+│   ├── AccountRepository.cs             #   ex.: GetByName (QueryExpression)
+│   └── ContactRepository.cs
 ├── Model/                               # entidades tipadas (early-bound)
 │   ├── Account.cs  [EntityLogicalName("account")]
 │   └── Contact.cs
 └── Common/                              # PluginBase, LocalPluginContext, Guard, Constants
 ```
 
-## Regra de dependência (Clean)
-```
-Plugins ──▶ Services (regra) ──▶ Repositories (queries) ──▶ IOrganizationService
-   └────────▶ Model (entidades tipadas) ◀──────────────────────┘
-Services/Repositories ──NÃO conhecem──▶ Plugins
-```
-- Plugin depende de `IAccountService`; Service depende de `IContactRepository` (abstrações).
-- **Nada de query no plugin ou no service** — quem fala com o Dataverse é o repositório da entidade.
+## Dois tamanhos de plugin
 
-## PluginBase (rica)
-`Common/PluginBase.cs` trata o pipeline:
-- `RegisterEvent(stage, message, entityLogicalName, handler)` no **construtor** do plugin.
-- No `Execute`, só dispara o handler cujo **message + stage + entity** casa com o step atual.
-- Expõe config do registro (`UnsecureConfig`/`SecureConfig`), tracing e tratamento de erro padrão.
-- `LocalPluginContext`: `TryGetTarget<T>`, `GetPreImage<T>`/`GetPostImage<T>`, `MessageName`/`Stage`/`Depth`,
-  `UserService`/`SystemService` e `Resolve<T>()` (composition root — factory simples, sem DI no sandbox).
-
+**Simples — regra mora no plugin:**
 ```csharp
 public sealed class AtualizarNomePlugin : PluginBase
 {
-    public AtualizarNomePlugin()
-        => RegisterEvent(Stages.PreOperation, Messages.Update, Model.Account.EntityLogicalName, OnExecute);
-
-    private void OnExecute(LocalPluginContext context)        // só orquestra
+    protected override void Execute(LocalPluginContext context)
     {
         if (!context.TryGetTarget<Model.Account>(out var account)) return;
-        context.Resolve<IAccountService>().NormalizarNome(account);   // regra fica no service
+        if (string.IsNullOrWhiteSpace(account.Name)) return;
+        account.Name = account.Name.Trim();   // regra simples, aqui mesmo
     }
 }
 ```
 
+**Com regra + dados — extrai service (montado com `new`):**
+```csharp
+public sealed class AtualizarRelacionamentoPlugin : PluginBase
+{
+    protected override void Execute(LocalPluginContext context)
+    {
+        if (!context.TryGetTarget<Model.Account>(out var account)) return;
+        account.Id = context.PluginContext.PrimaryEntityId;
+
+        var service = new AccountService(new ContactRepository(context.UserService));
+        service.PropagarContatoPrincipal(account);
+    }
+}
+```
+
+## Regra de dependência
+```
+Plugin → (Service, quando precisa) → Repository (por entidade) → IOrganizationService
+Plugin/Service → Model (entidades tipadas)
+```
+- Nada de query no plugin/service: quem fala com o Dataverse é o **repositório da entidade**.
+- `PluginBase` dá: `TryGetTarget<T>`, `GetPreImage<T>`/`GetPostImage<T>`, `MessageName`/`Stage`/`Depth`,
+  `UserService`/`SystemService`, tracing e tratamento de erro padrão.
+
 ## Convenções
-- Nome: `<Acao>Plugin.cs` em `Plugins/<Entidade>/`; registrar **um** evento por classe.
-- Service por entidade/caso de uso; **uma regra por método**.
-- Repository por entidade; **toda query (QueryExpression/FetchXML) mora aqui**.
+- Nome: `<Acao>Plugin.cs` em `Plugins/<Entidade>/`. Registrar **um** step por classe.
 - Use **Pre/Post Images** (`GetPreImage<T>`) em vez de `Retrieve` extra.
 - Falha de negócio → `InvalidPluginExecutionException` com mensagem clara.
 
-> Testes do assembly: `docs/architecture/testing.md` (service, repository e plugin testados isolados).
+> Testes: `docs/architecture/testing.md` (plugin, service e repository testados isolados).

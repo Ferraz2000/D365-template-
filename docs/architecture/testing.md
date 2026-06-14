@@ -10,9 +10,9 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
   (`IServiceProvider`, `IPluginExecutionContext`) e um `IOrganizationService` em memória.
   Roda em **.NET Framework, Mono e CI** — não usa FakeXrmEasy (evita a questão de licença v2/v3).
 - Padrão: Arrange (montar Target tipado + contexto) → Act (`harness.Execute<TPlugin>`) → Assert.
-- Cada camada testa isolada: **Services** (regra, sem pipeline), **Repositories** (queries via fake
-  `IOrganizationService`), **Plugins** (orquestração + matching de step via `harness`).
-- Cobertos: `AccountService`, `AccountRepository`, `AtualizarNomePlugin`, `AtualizarRelacionamentoPlugin`.
+- Cada camada testa isolada: **Plugins** (via `harness`), **Services** (regra, sem pipeline),
+  **Repositories** (queries via fake `IOrganizationService`). Classes concretas → testa com `new`.
+- Cobertos: `AtualizarNomePlugin`, `AtualizarRelacionamentoPlugin`, `AccountService`, `AccountRepository`.
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -36,7 +36,7 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 7 testes, 0 falhas |
+| **C# (net462, via Mono)** | ✅ 5 testes, 0 falhas |
 | **TypeScript (Jest)** | ✅ 5 testes, 2 suítes |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)
