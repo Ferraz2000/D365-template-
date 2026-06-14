@@ -36,15 +36,24 @@ O template **não injeta nada na sua org** — exemplos vêm prontos e inertes; 
 4. Web resources: `cd src/webresources/tpl && npm ci && npm run build` · testes: `npm test`.
 
 ## Convenções de plugin (resumo)
-- `Plugins/<Entidade>/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. 1 step por classe.
-- **Regra trivial no plugin**; quando cresce/mexe em dados → `Services/`. **Queries** sempre em `Repositories/` (por entidade).
-- Use **entidades tipadas** (`Model/`): `context.TryGetTarget<Conta>(out var conta)` → `conta.Nome`. **Domínio em PT, infra em EN.**
+- `Contas/<Acao>Plugin.cs` — herda `PluginBase`, implementa `Execute`. **1 plugin = 1 step.**
+- **Regra trivial no plugin**; quando cresce/mexe em dados → um **service** na mesma feature. **Queries** sempre no **repositório da entidade**.
+- Use **entidades tipadas**: `context.TryGetTarget<Conta>(out var conta)` → `conta.Nome`. **Domínio em PT, infra em EN.**
 - **Sem interfaces e sem DI**: classes concretas com `new` (ex.: `new ContaServico(new ContaRepositorio(ctx.UserService), new ContatoRepositorio(ctx.UserService))`).
+- Cada feature numa pasta/namespace (`Contas/`, `Contatos/`…); `Common`/`Integracao` não dependem de feature.
 
 ## Memória (hipocampo)
 Sistema de memória versionada e revisada por humano. `/capture` propõe notas, `/search`
 consulta o vault em `docs/brain/`. O **doc-sync gate** (pre-commit) exige que mudanças em
 `src/` venham com o doc de arquitetura atualizado no mesmo commit.
 
-> ALM/CI-CD: documentado em `docs/architecture/environments-alm.md` como próximo passo
-> (fora do escopo deste skeleton).
+> **CI**: `.github/workflows/ci.yml` roda testes (C#/TS) + doc-sync no PR. ALM/CD de solution:
+> ver `docs/architecture/environments-alm.md`.
+
+## Licença
+**MIT** — use à vontade (ver `LICENSE`). Inclui o `hipocampo/` vendorizado (também MIT, mesmo autor).
+
+## Aviso
+Projeto **da comunidade**, **não afiliado nem endossado pela Microsoft**. *Dynamics 365*,
+*Dataverse* e *Power Apps* são marcas da Microsoft, usadas aqui de forma **descritiva**. O SDK
+(`Microsoft.CrmSdk.*`) é referência **NuGet** (restaurada no build) — nenhum binário da Microsoft é redistribuído neste repo.
