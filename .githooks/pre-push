@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+# hipocampo pre-push — run every configured validator (mirrors CI).
+# If it passes, the push is safe. Requires the hipocampo package importable.
+PY=$(command -v python3 || command -v python) || { echo "hipocampo: python not found on PATH" >&2; exit 1; }
+exec "$PY" -m hipocampo.preflight

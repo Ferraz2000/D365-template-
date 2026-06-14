@@ -1,0 +1,86 @@
+# brain.config.toml — configuração por projeto do hipocampo
+# Gerado por brain-init. Você não edita à mão normalmente; peça ao agente para
+# evoluir (ex.: "adiciona uma regra doc-sync para src/webresources/").
+
+vault_root = "docs/brain"
+language = "pt-BR"
+project_mode = "greenfield"   # projeto novo (template)
+team = true                   # fluxo de PR + sugestão de branch protegido para o vault
+base_branch = "main"
+
+[dirs]
+knowledge = "knowledge"
+inbox = "knowledge/_inbox"
+insights = "insights"
+raw_sources = "raw/sources"
+generated = "_generated"
+cache = ".brain-cache"
+
+areas = ["meta", "architecture", "plugins", "webresources", "alm"]
+
+statuses = [
+  "triage", "active", "deferred",
+  "implemented", "closed", "rejected", "superseded", "promoted",
+]
+active_states = ["ready", "in-progress"]
+inactive_statuses = ["rejected", "closed", "discarded", "superseded", "implemented"]
+
+[area_aliases]
+
+[inbox]
+decay_days = 30
+sweep_type = "capture-sweep"
+
+[search]
+dirs = ["knowledge", "insights", "specs", "raw/sources"]
+hidden_statuses = ["closed", "implemented", "rejected", "superseded", "deferred"]
+
+# Nível de captura: equilibrado (decisões + contratos + lições + fontes)
+capture_triggers = [
+  "decidido", "a decisão é", "de agora em diante", "sempre", "regra de bolso",
+  "lição aprendida", "trade-off", "anti-padrão", "canônico",
+  "decided", "decision is", "from now on", "always", "lesson learned",
+  "trade-off", "anti-pattern", "canonical",
+]
+capture_agent_triggers = ["anti-padrão", "canônico", "padrão consolidado", "anti-pattern", "canonical"]
+capture_internal_hosts = ["localhost", "127.0.0.1"]
+capture_verbs = ["/capture", "registra isso", "save to the brain"]
+doc_links_exclude_dirs = ["coverage", "node_modules", "bin", "obj", ".venv", "dist", "build", "target", "vendor"]
+required_docs = []
+
+validators = ["doc_links", "feature_doc_sync", "vault_sync"]
+doc_sync_escape_globs = ["**/doc-impact-reports/**/*.md"]
+
+[router]
+file = "AGENTS.md"
+max_lines = 120
+
+[views]
+notes_root = "insights"
+id_label = "Note"
+
+[catalog]
+skills_dirs = []
+catalog_doc = ""
+required_files = []
+required_files_max_lines = 80
+
+# --- Doc-sync gate (team) -------------------------------------------------
+# Mexeu no código-fonte de uma área sensível? O commit exige atualizar o doc
+# correspondente no MESMO diff (ou um Doc Impact Report). Mantém código e padrão
+# em sincronia — humano e agente leem a mesma fonte da verdade.
+
+[[doc_sync]]
+name = "plugins"
+paths = ["src/plugins/**"]
+docs = ["docs/architecture/plugins.md"]
+
+[[doc_sync]]
+name = "webresources"
+paths = ["src/webresources/**"]
+docs = ["docs/architecture/webresources.md"]
+
+[[doc_sync]]
+name = "pcf"
+paths = ["src/pcf/**"]
+docs = ["docs/architecture/webresources.md"]

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "None",
+    "lib": ["ES2017", "DOM"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "noImplicitAny": true,
+    "removeComments": false,
+    "types": ["xrm"]
+  },
+  "include": ["src/**/*.ts"]
+}

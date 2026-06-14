@@ -1,0 +1,33 @@
+# ── hipocampo — derivado & descartável, nunca commitar ──────────────────────
+.brain-cache/
+__pycache__/
+*.py[cod]
+brain.config.local.toml
+
+# ── Exports de solution Dataverse — NÃO versionar (pesado/ruidoso) ───────────
+# A solution vive no ambiente; só é exportada como artefato de build/release.
+*.zip
+/out/
+/artifacts/
+/SolutionPackage/
+**/UnpackedSolution/
+**/*.cdsproj.user
+
+# ── .NET (plugins) ──────────────────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.dll
+*.pdb
+.vs/
+
+# ── Node / TypeScript (web resources, pcf) ──────────────────────────────────
+node_modules/
+dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# ── SO / editor ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

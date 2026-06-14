@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Assembly de plugins do D365 CE.
+    Plugins rodam no sandbox do Dataverse → .NET Framework 4.6.2 e strong name obrigatórios.
+    Renomeie "Template"/"tpl" ao derivar um projeto real.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <RootNamespace>Template.Plugins</RootNamespace>
+    <AssemblyName>Template.Plugins</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+
+    <!-- Strong name: gere uma chave e descomente (snk NÃO deve ir no repo público).
+         dotnet:  sn -k Template.Plugins.snk   (ou via Visual Studio) -->
+    <!-- <SignAssembly>true</SignAssembly> -->
+    <!-- <AssemblyOriginatorKeyFile>Template.Plugins.snk</AssemblyOriginatorKeyFile> -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- SDK do Dataverse para plugins. Versão fixada por boa prática de ALM. -->
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.0.2.49" />
+  </ItemGroup>
+
+</Project>
