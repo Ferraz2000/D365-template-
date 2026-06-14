@@ -2,9 +2,8 @@ using System;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using AtualizarNomePlugin = Template.Plugins.Plugins.Conta.AtualizarNomePlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class AtualizarNomePluginTests

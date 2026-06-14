@@ -13,7 +13,7 @@ web resources TypeScript e PCF — com **Screaming Architecture + Clean Code** (
 ## Estrutura
 ```
 src/
-├── plugins/Template.Plugins/   # assembly C# — Plugins/ · Services/ · Repositories/ · Model/ · Common/
+├── plugins/Template.Plugins/   # assembly C# (vertical slice) — Contas/ · Contatos/ · Integracao/ · Common/
 ├── webresources/tpl/           # TypeScript (módulos + esbuild) → dist/ (JS que sobe)
 └── pcf/                         # controles PCF
 tests/

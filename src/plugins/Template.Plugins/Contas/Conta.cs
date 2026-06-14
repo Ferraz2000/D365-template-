@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
-namespace Template.Plugins.Model
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// Entidade tipada (early-bound) da tabela <c>account</c>. Nome da classe em PT; o logical name

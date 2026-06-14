@@ -4,10 +4,8 @@ using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using Contato = Template.Plugins.Model.Contato;
-using AtualizarRelacionamentoPlugin = Template.Plugins.Plugins.Conta.AtualizarRelacionamentoPlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class AtualizarRelacionamentoPluginTests

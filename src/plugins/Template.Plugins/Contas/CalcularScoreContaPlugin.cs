@@ -1,8 +1,6 @@
 using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
-using Template.Plugins.Repositories;
-
-namespace Template.Plugins.Plugins.Conta
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// Custom Message (Custom API/Action) <c>tpl_CalcularScoreConta</c> como gatilho.
@@ -17,12 +15,12 @@ namespace Template.Plugins.Plugins.Conta
                 throw new InvalidPluginExecutionException("Parâmetro 'AccountId' é obrigatório.");
 
             var conta = new ContaRepositorio(context.UserService)
-                .ObterPorId(contaRef.Id, Model.Conta.Fields.Receita, Model.Conta.Fields.NumeroDeFuncionarios);
+                .ObterPorId(contaRef.Id, Conta.Fields.Receita, Conta.Fields.NumeroDeFuncionarios);
 
             context.SetOutput("Score", CalcularScore(conta));
         }
 
-        private static int CalcularScore(Model.Conta conta)
+        private static int CalcularScore(Conta conta)
         {
             var score = 0;
             if (conta.Receita >= 1_000_000m) score += 50;

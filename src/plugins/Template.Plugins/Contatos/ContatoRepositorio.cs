@@ -1,8 +1,7 @@
 using System;
 using Microsoft.Xrm.Sdk;
-using Template.Plugins.Model;
-
-namespace Template.Plugins.Repositories
+using Template.Plugins.Common;
+namespace Template.Plugins.Contatos
 {
     /// <summary>Acesso a dados de <c>contact</c>.</summary>
     public sealed class ContatoRepositorio : RepositoryBase

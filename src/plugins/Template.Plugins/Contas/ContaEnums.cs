@@ -1,4 +1,4 @@
-namespace Template.Plugins.Model
+namespace Template.Plugins.Contas
 {
     /// <summary>OptionSet <c>accountcategorycode</c>.</summary>
     public enum CategoriaConta

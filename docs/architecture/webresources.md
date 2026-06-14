@@ -23,6 +23,10 @@ src/webresources/tpl/
 └── dist/                   # bundle IIFE (gitignored; é o que sobe)
 ```
 
+## Validações (módulos puros)
+Regras de validação em **módulos puros** (`src/validacao.ts`: `emailValido`, `cnpjValido`) — sem `Xrm`,
+fáceis de testar com Jest. Os entry-points de formulário chamam essas funções.
+
 ## Convenções
 - 1 entry-point por formulário/feature; funções de evento exportadas.
 - Regra de negócio em módulo puro (sem `Xrm`) → testar sem mock pesado.

@@ -2,10 +2,8 @@ using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using CategoriaConta = Template.Plugins.Model.CategoriaConta;
-using RecalcularResumoContaPlugin = Template.Plugins.Plugins.Conta.RecalcularResumoContaPlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class RecalcularResumoContaPluginTests

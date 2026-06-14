@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using Template.Plugins.Model;
-
-namespace Template.Plugins.Repositories
+using Template.Plugins.Common;
+using Template.Plugins.Contatos;
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// Acesso a dados de <c>account</c>. **Toda query mora aqui.** Catálogo: igualdade, Like, In,

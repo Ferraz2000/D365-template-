@@ -2,10 +2,8 @@ using System;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using CategoriaConta = Template.Plugins.Model.CategoriaConta;
-using ClassificarContaPlugin = Template.Plugins.Plugins.Conta.ClassificarContaPlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class ClassificarContaPluginTests

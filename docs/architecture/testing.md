@@ -14,9 +14,9 @@ Projeto: `tests/Template.Plugins.Tests/` (TFM **net462**, igual ao assembly).
   **Repositories** (queries via fake `IOrganizationService`). Classes concretas → testa com `new`.
 - Cobertos: model (`Conta`), `ContaRepositorio` (queries), `ContaServico`, plugins (pré/pós/PreImage/custom message/anti-loop) e integrações.
 - **Integrações**: `ClienteRest` testado com `HttpMessageHandler` falso (sem rede); Service Bus com `IServiceEndpointNotificationService` falso.
-- **Testes de arquitetura** (`Arquitetura/ArquiteturaTests.cs`): regras de dependência (Model não depende de
-  Services/Repositories/Plugins; Repositories/Services não dependem de Plugins) e convenções (plugins `sealed`,
-  herdam `PluginBase`, terminam em `Plugin`). Via reflection — sem dependência nova.
+- **Testes de arquitetura** (`Arquitetura/ArquiteturaTests.cs`, vertical slice): `Common`/`Integracao` não dependem
+  de feature; `Contatos` não depende de `Contas`; plugins são `sealed`/herdam `PluginBase`/terminam em `Plugin` e
+  **não são referenciados** (pontos de entrada); repositórios herdam `RepositoryBase`. Via reflection — sem dependência nova.
 
 ```sh
 dotnet test tests/Template.Plugins.Tests        # Windows / CI
@@ -40,13 +40,13 @@ npm ci && npm test && npm run build
 ## Verificado neste scaffolding
 | Suíte | Resultado |
 |---|---|
-| **C# (net462, via Mono)** | ✅ 28 testes, 0 falhas |
-| **TypeScript (Jest)** | ✅ 5 testes, 2 suítes |
+| **C# (net462, via Mono)** | ✅ 33 testes, 0 falhas |
+| **TypeScript (Jest)** | ✅ 9 testes, 3 suítes |
 
 > Toolchain instalada no container: **.NET SDK 8** (build de net462 com reference assemblies)
 > e **Mono** (executa net462 em Linux). Em dev Windows / CI, use `dotnet test` direto.
 > Observação: o **.NET Framework 4.8 é só Windows**; em Linux quem roda net462/4.x é o Mono.
 
 ## Princípio
-Cada unidade testável = uma responsabilidade. Plugin fino + regra isolada + acesso a dados
-atrás de `IRepository` torna tudo **mockável** — é o que destrava ter testes de verdade.
+Cada unidade testável = uma responsabilidade. Plugin fino + regra no service + acesso a dados
+no repositório (sobre `IOrganizationService`) torna tudo **mockável** — é o que destrava testes de verdade.

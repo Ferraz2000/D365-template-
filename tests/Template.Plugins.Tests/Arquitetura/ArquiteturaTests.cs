@@ -3,62 +3,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Template.Plugins.Common;
-using Template.Plugins.Repositories;
 using Xunit;
 
 namespace Template.Plugins.Tests
 {
     /// <summary>
-    /// Testes de arquitetura: garantem a regra de dependência e as convenções no nível da API
-    /// (base, campos, parâmetros, retornos). Sem dependência externa — usa reflection.
-    /// (Limite: não inspeciona corpo de método; para isso usaríamos NetArchTest/Mono.Cecil.)
+    /// Testes de arquitetura para o desenho em **vertical slice** (Screaming).
+    /// Regras checadas no nível da API (base, campos, parâmetros, retornos) via reflection,
+    /// sem dependência externa. (Limite: não inspeciona corpo de método.)
     /// </summary>
     public class ArquiteturaTests
     {
         private static readonly Assembly Assembly = typeof(PluginBase).Assembly;
 
+        private static IEnumerable<Type> Todos =>
+            Assembly.GetTypes().Where(t => !t.Name.StartsWith("<"));
+
         private static IEnumerable<Type> TiposNo(string ns) =>
-            Assembly.GetTypes().Where(t =>
-                t.Namespace != null &&
-                (t.Namespace == ns || t.Namespace.StartsWith(ns + ".")) &&
-                !t.Name.StartsWith("<"));
+            Todos.Where(t => t.Namespace != null && (t.Namespace == ns || t.Namespace.StartsWith(ns + ".")));
 
         [Fact]
-        public void Plugins_herdam_PluginBase_sao_sealed_e_terminam_em_Plugin()
+        public void Plugins_sao_sealed_herdam_PluginBase_e_terminam_em_Plugin()
         {
-            var plugins = TiposNo("Template.Plugins.Plugins").Where(t => t.IsClass && !t.IsAbstract).ToList();
+            var plugins = Todos.Where(t => t.IsClass && !t.IsAbstract && typeof(PluginBase).IsAssignableFrom(t)).ToList();
             Assert.NotEmpty(plugins);
             foreach (var p in plugins)
             {
-                Assert.True(typeof(PluginBase).IsAssignableFrom(p), $"{p.Name} deve herdar PluginBase");
                 Assert.True(p.IsSealed, $"{p.Name} deve ser sealed");
                 Assert.EndsWith("Plugin", p.Name);
             }
         }
 
         [Fact]
-        public void Repositorios_concretos_herdam_RepositoryBase()
+        public void Repositorios_herdam_RepositoryBase()
         {
-            var repos = TiposNo("Template.Plugins.Repositories")
-                .Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Repositorio")).ToList();
+            var repos = Todos.Where(t => t.IsClass && !t.IsAbstract && t.Name.EndsWith("Repositorio")).ToList();
             Assert.NotEmpty(repos);
             foreach (var r in repos)
                 Assert.True(typeof(RepositoryBase).IsAssignableFrom(r), $"{r.Name} deve herdar RepositoryBase");
         }
 
         [Fact]
-        public void Model_nao_depende_de_Services_Repositories_Plugins()
-            => SemDependenciaPara("Template.Plugins.Model",
-                "Template.Plugins.Services", "Template.Plugins.Repositories", "Template.Plugins.Plugins");
+        public void Common_nao_depende_de_features()
+            => SemDependenciaPara("Template.Plugins.Common",
+                "Template.Plugins.Contas", "Template.Plugins.Contatos", "Template.Plugins.Integracao");
 
         [Fact]
-        public void Repositories_nao_dependem_de_Plugins_nem_Services()
-            => SemDependenciaPara("Template.Plugins.Repositories",
-                "Template.Plugins.Plugins", "Template.Plugins.Services");
+        public void Integracao_nao_depende_de_features()
+            => SemDependenciaPara("Template.Plugins.Integracao",
+                "Template.Plugins.Contas", "Template.Plugins.Contatos");
 
         [Fact]
-        public void Services_nao_dependem_de_Plugins()
-            => SemDependenciaPara("Template.Plugins.Services", "Template.Plugins.Plugins");
+        public void Feature_Contatos_nao_depende_de_Contas()
+            => SemDependenciaPara("Template.Plugins.Contatos", "Template.Plugins.Contas");
+
+        [Fact]
+        public void Plugins_sao_pontos_de_entrada_ninguem_os_referencia()
+        {
+            foreach (var t in Todos)
+                foreach (var dep in Referenciados(t))
+                    Assert.False(
+                        dep != t && typeof(PluginBase).IsAssignableFrom(dep) && dep.Name.EndsWith("Plugin"),
+                        $"{t.FullName} não pode referenciar o plugin {dep.Name} (plugins são pontos de entrada)");
+        }
 
         private static void SemDependenciaPara(string nsOrigem, params string[] nsProibidos)
         {

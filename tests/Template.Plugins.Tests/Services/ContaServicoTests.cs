@@ -1,13 +1,10 @@
 using System;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using Template.Plugins.Repositories;
-using Template.Plugins.Services;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using Contato = Template.Plugins.Model.Contato;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class ContaServicoTests

@@ -1,7 +1,7 @@
 using System;
 using Template.Plugins.Common;
 
-namespace Template.Plugins.Plugins.Conta
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// **Integração desacoplada (recomendada)**: publica o contexto da operação numa fila do
@@ -15,7 +15,7 @@ namespace Template.Plugins.Plugins.Conta
 
         protected override void Execute(LocalPluginContext context)
         {
-            if (!context.TryGetTarget<Model.Conta>(out _)) return;
+            if (!context.TryGetTarget<Conta>(out _)) return;
 
             context.PostarNaFila(ServiceEndpointId);
             context.Trace("Evento da conta publicado na fila.");

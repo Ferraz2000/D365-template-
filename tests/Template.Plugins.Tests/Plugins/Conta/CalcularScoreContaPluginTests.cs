@@ -2,9 +2,8 @@ using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using CalcularScoreContaPlugin = Template.Plugins.Plugins.Conta.CalcularScoreContaPlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class CalcularScoreContaPluginTests

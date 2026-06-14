@@ -3,7 +3,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using Template.Plugins.Common;
 
-namespace Template.Plugins.Repositories
+namespace Template.Plugins.Common
 {
     /// <summary>
     /// Base dos repositórios por entidade: encapsula o <see cref="IOrganizationService"/> e o CRUD

@@ -38,6 +38,14 @@ namespace Template.Plugins.Tests.Fakes
         }
     }
 
+    public sealed class AssociacaoRegistrada
+    {
+        public string EntityName;
+        public Guid EntityId;
+        public string Relationship;
+        public List<Guid> Related;
+    }
+
     public sealed class FakeServiceProvider : IServiceProvider
     {
         private readonly IPluginExecutionContext _context;
@@ -83,6 +91,9 @@ namespace Template.Plugins.Tests.Fakes
         private readonly Dictionary<string, Entity> _store = new Dictionary<string, Entity>();
         private static string Key(string logicalName, Guid id) => logicalName + ":" + id;
 
+        /// <summary>Associações N:N registradas (para asserção em testes).</summary>
+        public List<AssociacaoRegistrada> Associacoes { get; } = new List<AssociacaoRegistrada>();
+
         public Guid Create(Entity entity)
         {
             var id = entity.Id == Guid.Empty ? Guid.NewGuid() : entity.Id;
@@ -120,8 +131,27 @@ namespace Template.Plugins.Tests.Fakes
             if (qe?.Criteria != null) items = items.Where(e => MatchesFilter(e, qe.Criteria));
             if (qe != null && qe.Orders.Count > 0) items = ApplyOrders(items, qe.Orders);
             if (qe != null && qe.TopCount.HasValue) items = items.Take(qe.TopCount.Value);
-            // (link-entity/joins não são simulados aqui — cobertos por org real / FakeXrmEasy.)
-            return new EntityCollection(items.Select(Clone).ToList());
+
+            var resultado = items.Select(Clone).ToList();
+            if (qe?.LinkEntities != null)
+                foreach (var le in qe.LinkEntities)
+                    AplicarLink(resultado, le); // join simples de 1 nível (LeftOuter)
+            return new EntityCollection(resultado);
+        }
+
+        private void AplicarLink(List<Entity> principais, LinkEntity le)
+        {
+            foreach (var principal in principais)
+            {
+                var de = principal.Contains(le.LinkFromAttributeName) ? Normalize(principal[le.LinkFromAttributeName]) : null;
+                var ligado = _store.Values.FirstOrDefault(e =>
+                    e.LogicalName == le.LinkToEntityName &&
+                    Equals(de, e.Contains(le.LinkToAttributeName) ? Normalize(e[le.LinkToAttributeName]) : (object)e.Id));
+                if (ligado == null || le.Columns == null) continue;
+                foreach (var col in le.Columns.Columns)
+                    if (ligado.Contains(col))
+                        principal[le.EntityAlias + "." + col] = new AliasedValue(le.LinkToEntityName, col, ligado[col]);
+            }
         }
 
         private static IEnumerable<Entity> ApplyOrders(IEnumerable<Entity> items, DataCollection<OrderExpression> orders)
@@ -199,7 +229,16 @@ namespace Template.Plugins.Tests.Fakes
         }
 
         public OrganizationResponse Execute(OrganizationRequest request) => throw new NotSupportedException();
-        public void Associate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities) => throw new NotSupportedException();
+
+        public void Associate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities)
+            => Associacoes.Add(new AssociacaoRegistrada
+            {
+                EntityName = entityName,
+                EntityId = entityId,
+                Relationship = relationship.SchemaName,
+                Related = relatedEntities.Select(r => r.Id).ToList()
+            });
+
         public void Disassociate(string entityName, Guid entityId, Relationship relationship, EntityReferenceCollection relatedEntities) => throw new NotSupportedException();
 
         private static Entity Clone(Entity e)

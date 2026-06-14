@@ -1,12 +1,10 @@
+using System;
 using System.Linq;
-using Template.Plugins.Repositories;
+using Microsoft.Xrm.Sdk;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using CategoriaConta = Template.Plugins.Model.CategoriaConta;
-using EstadoConta = Template.Plugins.Model.EstadoConta;
-using Servico = Template.Plugins.Model.Servico;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class ContaRepositorioTests
@@ -54,6 +52,40 @@ namespace Template.Plugins.Tests
             var r = Semear().ComServico(Servico.Consultoria);
             Assert.Single(r);
             Assert.Equal("Contoso", r[0].Nome);
+        }
+
+        [Fact]
+        public void NomesDosContatosPrincipais_link_entity()
+        {
+            var crm = new FakeOrganizationService();
+            var repo = new ContaRepositorio(crm);
+            var contatoId = crm.Create(new Contato(Guid.NewGuid()) { NomeCompleto = "Ada Lovelace" });
+            var contaId = repo.Criar(new Conta
+            {
+                Nome = "Contoso",
+                ContatoPrincipalId = new EntityReference(Contato.EntityLogicalName, contatoId)
+            });
+
+            var mapa = repo.NomesDosContatosPrincipais();
+
+            Assert.Equal("Ada Lovelace", mapa[contaId]);
+        }
+
+        [Fact]
+        public void AssociarContatos_relacionamento_NN()
+        {
+            var crm = new FakeOrganizationService();
+            var repo = new ContaRepositorio(crm);
+            var contaId = Guid.NewGuid();
+            var c1 = Guid.NewGuid();
+            var c2 = Guid.NewGuid();
+
+            repo.AssociarContatos(contaId, "tpl_conta_contato", new[] { c1, c2 });
+
+            var assoc = Assert.Single(crm.Associacoes);
+            Assert.Equal("tpl_conta_contato", assoc.Relationship);
+            Assert.Equal(contaId, assoc.EntityId);
+            Assert.Equal(new[] { c1, c2 }, assoc.Related.ToArray());
         }
     }
 }

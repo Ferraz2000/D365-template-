@@ -1,11 +1,8 @@
 using System;
 using Microsoft.Xrm.Sdk;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using CategoriaConta = Template.Plugins.Model.CategoriaConta;
-using EstadoConta = Template.Plugins.Model.EstadoConta;
-using Servico = Template.Plugins.Model.Servico;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class ContaModelTests

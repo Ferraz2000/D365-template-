@@ -1,7 +1,5 @@
 using Template.Plugins.Common;
-using Template.Plugins.Repositories;
-
-namespace Template.Plugins.Plugins.Conta
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// **Anti-loop com Depth**: este plugin atualiza a própria conta — o que dispararia o Update
@@ -14,9 +12,9 @@ namespace Template.Plugins.Plugins.Conta
         {
             if (context.Depth > 1) return; // anti-loop: não reentrar
 
-            if (!context.TryGetTarget<Model.Conta>(out var conta)) return;
+            if (!context.TryGetTarget<Conta>(out var conta)) return;
 
-            var atualizacao = new Model.Conta(context.PluginContext.PrimaryEntityId)
+            var atualizacao = new Conta(context.PluginContext.PrimaryEntityId)
             {
                 Resumo = $"{conta.Categoria} / {conta.Receita:C}"
             };

@@ -2,7 +2,7 @@ using System;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Client;
 
-namespace Template.Plugins.Model
+namespace Template.Plugins.Contatos
 {
     /// <summary>Entidade tipada (early-bound) da tabela <c>contact</c>.</summary>
     [EntityLogicalName("contact")]

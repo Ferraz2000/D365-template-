@@ -2,9 +2,8 @@ using System;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using RegistrarMudancaNomePlugin = Template.Plugins.Plugins.Conta.RegistrarMudancaNomePlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class RegistrarMudancaNomePluginTests

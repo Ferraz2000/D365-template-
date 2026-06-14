@@ -2,9 +2,8 @@ using System;
 using Template.Plugins.Common;
 using Template.Plugins.Tests.Fakes;
 using Xunit;
-using Conta = Template.Plugins.Model.Conta;
-using PublicarEventoContaPlugin = Template.Plugins.Plugins.Conta.PublicarEventoContaPlugin;
-
+using Template.Plugins.Contas;
+using Template.Plugins.Contatos;
 namespace Template.Plugins.Tests
 {
     public class PublicarEventoContaPluginTests

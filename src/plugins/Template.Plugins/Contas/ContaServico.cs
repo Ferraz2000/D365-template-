@@ -1,9 +1,7 @@
 using Microsoft.Xrm.Sdk;
 using Template.Plugins.Common;
-using Template.Plugins.Model;
-using Template.Plugins.Repositories;
-
-namespace Template.Plugins.Services
+using Template.Plugins.Contatos;
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// Regra de negócio da conta. Use quando a regra cresce ou mexe em dados.

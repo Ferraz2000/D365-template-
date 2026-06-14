@@ -14,19 +14,24 @@
 - **Query sempre num Repositório** (por entidade) — nunca no plugin/service.
 - **Sem interfaces e sem DI**: classes concretas, dependências com `new`.
 
-## Camadas (dentro do assembly)
+## Estrutura — vertical slice (Screaming)
+O topo do assembly **grita o domínio**: cada feature é uma pasta/namespace com tudo dela.
 ```
 src/plugins/<Pub>.Plugins/
-├── Plugins/<Entidade>/<Acao>Plugin.cs   # herda PluginBase, implementa Execute
-├── Services/ContaServico.cs             # regra de negócio (só quando precisa)
-├── Repositories/                        # acesso a dados por entidade; queries aqui
-│   ├── RepositoryBase.cs                #   CRUD + Associate/Disassociate (infra)
-│   ├── ContaRepositorio.cs / ContatoRepositorio.cs
-├── Model/                               # entidades tipadas (early-bound)
-│   ├── Conta.cs / Contato.cs / ContaEnums.cs
-├── Integracao/ClienteRest.cs           # cliente HTTP (infra, HttpClient injetável)
-└── Common/                              # PluginBase, LocalPluginContext, Guard, Constants
+├── Contas/                              # 🗣️ feature Conta (namespace Template.Plugins.Contas)
+│   ├── Conta.cs / ContaEnums.cs         #   model + enums (early-bound)
+│   ├── ContaRepositorio.cs              #   queries da conta
+│   ├── ContaServico.cs                  #   regra de negócio
+│   ├── ContaPayload.cs                  #   payload de integração (puro)
+│   └── *Plugin.cs                       #   ações (8 plugins)
+├── Contatos/                            # feature Contato
+│   ├── Contato.cs / ContatoRepositorio.cs
+├── Integracao/ClienteRest.cs           # infra compartilhada (HTTP)
+└── Common/                              # PluginBase, LocalPluginContext, RepositoryBase, Guard, Constants
 ```
+Regra entre features: dependência **numa direção** (`Contas → Contatos`); `Common`/`Integracao`
+não dependem de feature nenhuma. As camadas (model/repo/service/plugin) viram **arquivos** dentro
+da feature — a separação é por convenção (e pelos testes de arquitetura).
 
 ## Integrações
 | Padrão | Plugin | Como |

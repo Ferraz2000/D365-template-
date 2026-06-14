@@ -1,6 +1,6 @@
 using Template.Plugins.Common;
 
-namespace Template.Plugins.Plugins.Conta
+namespace Template.Plugins.Contas
 {
     /// <summary>
     /// Post-Operation + PreImage: compara o nome anterior (PreImage) com o novo (Target).
@@ -10,10 +10,10 @@ namespace Template.Plugins.Plugins.Conta
     {
         protected override void Execute(LocalPluginContext context)
         {
-            if (!context.TryGetTarget<Model.Conta>(out var conta)) return;
-            if (!conta.Contains(Model.Conta.Fields.Nome)) return;
+            if (!context.TryGetTarget<Conta>(out var conta)) return;
+            if (!conta.Contains(Conta.Fields.Nome)) return;
 
-            var anterior = context.GetPreImage<Model.Conta>("preimage");
+            var anterior = context.GetPreImage<Conta>("preimage");
             var nomeAntigo = anterior?.Nome;
             var nomeNovo = conta.Nome;
             if (nomeAntigo == nomeNovo) return;
