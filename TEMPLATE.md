@@ -48,7 +48,7 @@ Os exemplos vêm **prontos e inertes**:
 ## Memória (Hipocampo) no projeto novo
 O brain **e o motor** vêm vendorizados (funcionam out-of-the-box); o **plugin** (atalhos) é à parte.
 - **`/capture` e `/search`:** instale o plugin uma vez — `/plugin install hipocampo@hipocampo` ou
-  `npx skills add Ferraz2000/hipocampo`. (O gate, validators e hooks já funcionam sem isso.)
+  `npx skills add Ferraz2000/hipocampo-memory`. (O gate, validators e hooks já funcionam sem isso.)
 - **Reset do brain por projeto:** as páginas `knowledge/` + `adrs/` são **convenções-semente genéricas** —
   **mantenha**. Já o `log.md` e o source da sessão são específicos — zere-os:
   ```sh
