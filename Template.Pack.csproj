@@ -14,6 +14,7 @@
     <Description>Template D365 Customer Engagement: vertical slice (Screaming), plugins C#, web resources TypeScript, testes, CI, doc-sync e memória (Hipocampo).</Description>
     <PackageTags>dotnet-new;templates;d365;dataverse;powerplatform;crm</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/Ferraz2000/D365-template-</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Ferraz2000/D365-template-</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -29,8 +30,10 @@
 
   <ItemGroup>
     <Content Include="**\*"
-             Exclude="**\bin\**;**\obj\**;**\node_modules\**;**\dist\**;.git\**;**\*.user;**\package-lock.json;Template.Pack.*;nupkg\**;**\__pycache__\**;**\*.pyc" />
+             Exclude="**\bin\**;**\obj\**;**\node_modules\**;**\dist\**;.git\**;**\*.user;**\package-lock.json;Template.Pack.*;nupkg\**;**\__pycache__\**;**\*.pyc;README.md" />
     <Compile Remove="**\*" />
+    <!-- README na RAIZ do pacote (listagem nuget.org); fora do content/ do template. -->
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
