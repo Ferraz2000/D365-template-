@@ -67,11 +67,15 @@ dotnet nuget add source https://nuget.pkg.github.com/Ferraz2000/index.json \
 dotnet new install D365CE.VerticalSlice.Template
 ```
 
-**Instalação pública (recomendado para repo open source) — nuget.org:** qualquer um instala com
-`dotnet new install D365CE.VerticalSlice.Template`, **sem autenticar**. Habilite uma vez:
-1. Crie uma API key em nuget.org (escopo *Push*, glob `D365CE.VerticalSlice.*`).
-2. Adicione como secret do repo: `gh secret set NUGET_API_KEY` (cole a key — **nunca** commitar).
-3. Publique: re-rode o release mais recente, **ou** dispare manual —
-   `gh workflow run release.yml -f version=1.1.1`. O passo nuget.org só roda com a secret presente.
+**Instalação pública (recomendado p/ repo open source) — nuget.org via Trusted Publishing (OIDC, sem API key longeva):**
+qualquer um instala com `dotnet new install D365CE.VerticalSlice.Template`, **sem autenticar**. Habilite uma vez:
+1. No nuget.org → menu do usuário → **Trusted Publishing** → nova policy:
+   Repository Owner `Ferraz2000`, Repository `D365-template-`, Workflow File `release.yml` (só o nome, sem o caminho), Environment vazio.
+2. Crie a secret com teu **username** do nuget.org (perfil, não e-mail): `gh secret set NUGET_USER`.
+3. Publique: `gh workflow run release.yml -f version=1.1.1` (ou crie um Release/tag). O `NuGet/login@v1`
+   troca o token OIDC do GitHub por uma key temporária (~1h); sem a secret/policy, o passo nuget.org é pulado.
+
+> Não precisa mais de API key em secret. Policy de repo privado começa "ativa por 7 dias" até o 1º publish
+> (fixa nos IDs do repo depois); repo público ativa direto.
 
 **Sem NuGet:** botão **"Use this template"** (repo marcado como Template) — o caminho mais simples.
