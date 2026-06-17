@@ -25,7 +25,7 @@ docs/
 ```
 
 ## Reutilizar como template
-**Projeto novo?** `dotnet new install .` → `dotnet new d365ce -n MeuProjeto --prefix ctso`. Ver `TEMPLATE.md`.
+**Projeto novo?** `dotnet new install D365CE.VerticalSlice.Template` → `dotnet new d365ce -n MeuProjeto --prefix ctso`. (Do clone local: `dotnet new install .`.) Ver `TEMPLATE.md`.
 O template **não injeta nada na sua org** — exemplos vêm prontos e inertes; registro de step é opt-in.
 
 ## Por onde começar

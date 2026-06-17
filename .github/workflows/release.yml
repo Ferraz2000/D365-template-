@@ -8,6 +8,12 @@ on:
     types: [published]
   push:
     tags: ["v*", "V*"]   # empurrar uma tag v1.2.3 também publica
+  workflow_dispatch:      # publicar on-demand (ex.: após criar a secret NUGET_API_KEY)
+    inputs:
+      version:
+        description: "Versão a publicar (ex.: 1.1.1)"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -26,7 +32,7 @@ jobs:
 
       - name: Pack (versão = tag do release, sem o "v")
         run: |
-          VERSION="${{ github.event.release.tag_name || github.ref_name }}"
+          VERSION="${{ github.event.inputs.version || github.event.release.tag_name || github.ref_name }}"
           VERSION="${VERSION#v}"; VERSION="${VERSION#V}"   # aceita v1.2.3 ou V1.2.3
           dotnet pack Template.Pack.csproj -c Release -o nupkg -p:PackageVersion="$VERSION"
 

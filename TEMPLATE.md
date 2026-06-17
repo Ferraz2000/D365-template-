@@ -5,8 +5,9 @@ web resources TypeScript, testes, CI, doc-sync e memória (Hipocampo).
 
 ## Opção A — `dotnet new` (instalável, recomendado)
 ```sh
-# instala uma vez (a partir da pasta do template, ou de um pacote NuGet)
-dotnet new install <caminho-do-template>     # ex.: dotnet new install .
+# instala uma vez (do nuget.org, ou de um clone local)
+dotnet new install D365CE.VerticalSlice.Template   # publicado no nuget.org (público, sem auth)
+dotnet new install .                               # ou a partir do clone local (dev)
 
 # cria um PROJETO NOVO já renomeado
 dotnet new d365ce -n Contoso.Crm                 # mantém o prefixo padrão "tpl"
@@ -49,14 +50,10 @@ Os exemplos vêm **prontos e inertes**:
 O brain **e o motor** vêm vendorizados (funcionam out-of-the-box); o **plugin** (atalhos) é à parte.
 - **`/capture` e `/search`:** instale o plugin uma vez — `/plugin install hipocampo@hipocampo` ou
   `npx skills add Ferraz2000/hipocampo-memory`. (O gate, validators e hooks já funcionam sem isso.)
-- **Reset do brain por projeto:** as páginas `knowledge/` + `adrs/` são **convenções-semente genéricas** —
-  **mantenha**. Já o `log.md` e o source da sessão são específicos — zere-os:
-  ```sh
-  : > docs/brain/log.md
-  rm -f docs/brain/raw/sources/2026-06-14-sessao-decisoes.md
-  # e remova a citação dessa fonte nas páginas que a usam, ou re-capture
-  ```
-  Depois capture as decisões do **seu** projeto via `/capture`.
+- **Vault já vem limpo:** o projeto gerado recebe um vault-semente **curado** (knowledge
+  `architecture`/`plugins`/`webresources` + convenções genéricas; **sem** ADRs/`meta`/`alm`/sessão
+  do template, `log.md` zerado). A geração mapeia `seed/brain → docs/brain` — **não precisa resetar
+  nada à mão**. Só capture as decisões do **seu** projeto via `/capture`.
 
 ## Publicar o template (instalação por nome)
 **Automático, sem API key:** crie um **Release no GitHub** (tag tipo `v1.0.0`) → o workflow
@@ -70,7 +67,11 @@ dotnet nuget add source https://nuget.pkg.github.com/Ferraz2000/index.json \
 dotnet new install D365CE.VerticalSlice.Template
 ```
 
-**Opcional — nuget.org** (instalação pública, sem autenticar): crie a secret `NUGET_API_KEY` no repo;
-o mesmo release passa a publicar lá também (o workflow já tem o passo, condicional à secret).
+**Instalação pública (recomendado para repo open source) — nuget.org:** qualquer um instala com
+`dotnet new install D365CE.VerticalSlice.Template`, **sem autenticar**. Habilite uma vez:
+1. Crie uma API key em nuget.org (escopo *Push*, glob `D365CE.VerticalSlice.*`).
+2. Adicione como secret do repo: `gh secret set NUGET_API_KEY` (cole a key — **nunca** commitar).
+3. Publique: re-rode o release mais recente, **ou** dispare manual —
+   `gh workflow run release.yml -f version=1.1.1`. O passo nuget.org só roda com a secret presente.
 
 **Sem NuGet:** botão **"Use this template"** (repo marcado como Template) — o caminho mais simples.
