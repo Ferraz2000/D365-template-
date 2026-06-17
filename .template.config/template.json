@@ -37,7 +37,9 @@
         ".github/workflows/release.yml",
         "README.md",
         "docs/brain/**",
-        "seed/**"
+        "seed/**",
+        "**/__pycache__/**",
+        "**/*.pyc"
       ],
       "rename": {
         "README.project.md": "README.md"

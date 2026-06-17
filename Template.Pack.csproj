@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <Content Include="**\*"
-             Exclude="**\bin\**;**\obj\**;**\node_modules\**;**\dist\**;.git\**;**\*.user;**\package-lock.json;Template.Pack.*;nupkg\**" />
+             Exclude="**\bin\**;**\obj\**;**\node_modules\**;**\dist\**;.git\**;**\*.user;**\package-lock.json;Template.Pack.*;nupkg\**;**\__pycache__\**;**\*.pyc" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
