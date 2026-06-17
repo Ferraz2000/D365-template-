@@ -48,8 +48,8 @@ consulta o vault em `docs/brain/`. O núcleo é **Python puro (stdlib)** e funci
 **qualquer agente** — **Claude Code** (hooks automáticos), **Gemini CLI** (`GEMINI.md` +
 `.gemini/commands/`) e **Codex** (lê `AGENTS.md` nativo) — ou via CLI: `python3 -m hipocampo.search`.
 O **doc-sync** sugere atualizar o doc de arquitetura junto com mudanças em `src/`, mas é
-**advisory** (`doc_sync_enforce = false`): avisa, não bloqueia o dev. Já a integridade do
-vault (links/proveniência) segue como gate no push/PR.
+**advisory** (`[enforcement] pre_commit = "warn"`): avisa, não bloqueia o dev. Já a integridade
+do vault (links/proveniência) segue como gate no push/PR (`pre_push`/`ci = "block"`).
 
 > **CI**: `.github/workflows/ci.yml` roda testes (C#/TS) + doc-sync no PR. ALM/CD de solution:
 > ver `docs/architecture/environments-alm.md`.

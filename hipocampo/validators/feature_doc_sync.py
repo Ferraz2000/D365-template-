@@ -14,9 +14,6 @@ Modes:
   default     Branch diff. Base ref resolved from --base, CI env, or the
               configured base branch.
 
-When ``doc_sync_enforce = false`` in brain.config.toml the check is advisory:
-violations are printed but the exit code stays 0 (never blocks commit/push/PR).
-
 Never hard-fails when it cannot determine changes (exit 0); fails only on a real
 sensitive-area-without-doc violation.
 """
@@ -58,16 +55,10 @@ def _report(changed, cfg, label):
     print(f"feature-doc-sync: {len(changed)} file(s) {label}.")
     fails = failures(changed, cfg)
     if fails:
-        advisory = not cfg.doc_sync_enforce
-        print("\nfeature-doc-sync " +
-              ("WARNING (advisory)" if advisory else "validation FAILED"))
+        print("\nfeature-doc-sync validation FAILED")
         print("=" * 72)
         print("\n\n".join(fails))
         print("=" * 72)
-        if advisory:
-            print("feature-doc-sync: advisory mode (doc_sync_enforce=false) — "
-                  "not blocking. Update the doc when you can.")
-            return 0
         return 1
     print("feature-doc-sync: validation passed.")
     return 0

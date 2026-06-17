@@ -34,13 +34,11 @@ capture_verbs = ["/capture", "registra isso", "save to the brain"]
 doc_links_exclude_dirs = ["coverage", "node_modules", "bin", "obj", ".venv", "dist", "build", "target", "vendor"]
 required_docs = []
 
-validators = ["doc_links", "feature_doc_sync", "vault_sync"]
+# Preflight (pre-push/CI) roda só integridade — link morto / proveniência quebrada.
+# feature_doc_sync NÃO entra aqui: ele roda no pre-commit via `hipocampo.gate` como
+# advisory (ver [enforcement] abaixo), pra não travar push/CI por doc desatualizada.
+validators = ["doc_links", "vault_sync"]
 
-# Doc-sync como forcing function NÃO-bloqueante: avisa, mas não trava commit/push/PR.
-# Dev humano nem sempre tem tempo de atualizar todas as docs — não pode ficar bloqueado.
-# Norma segue valendo para agentes (AGENTS.md). Integridade real (doc_links/vault_sync
-# = link morto, proveniência quebrada) continua bloqueando. true → volta a travar.
-doc_sync_enforce = false
 doc_sync_escape_globs = ["**/doc-impact-reports/**/*.md"]
 
 [dirs]
@@ -75,10 +73,22 @@ catalog_doc = ""
 required_files = []
 required_files_max_lines = 80
 
+# --- Enforcement (por ponto: block | warn | off) --------------------------
+# Os git hooks e o CI chamam `python -m hipocampo.gate <ponto>`; o modo abaixo
+# decide se uma violação bloqueia. pre_commit roda só feature_doc_sync (doc-sync);
+# pre_push/ci rodam o preflight completo (validators = integridade).
+#   pre_commit = "warn"  → doc-sync avisa no commit, nunca trava o dev humano
+#   pre_push   = "block" → integridade (doc_links/vault_sync) trava o push
+#   ci         = "block" → integridade trava o merge
+[enforcement]
+pre_commit = "warn"
+pre_push = "block"
+ci = "block"
+
 # --- Doc-sync gate (team) -------------------------------------------------
 # Mexeu no código-fonte de uma área sensível? O agente atualiza o doc correspondente
-# no MESMO diff (ou um Doc Impact Report). Mantém código e padrão em sincronia. Agora
-# é advisory (doc_sync_enforce = false): avisa, não bloqueia o dev humano.
+# no MESMO diff (ou um Doc Impact Report). Mantém código e padrão em sincronia.
+# É advisory no commit (ver [enforcement] pre_commit = "warn"): avisa, não bloqueia.
 
 [[doc_sync]]
 name = "plugins"

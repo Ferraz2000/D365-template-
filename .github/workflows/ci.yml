@@ -42,10 +42,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Preflight (doc-sync + vault-sync + doc-links)
+      - name: Gate (integridade — vault-sync + doc-links; modo via [enforcement] ci)
         env:
           GITHUB_EVENT_BEFORE: ${{ github.event.before }}
-        run: python3 -m hipocampo.preflight
+        run: python3 -m hipocampo.gate ci
 
   testes-csharp:
     needs: changes
@@ -55,14 +55,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "9.0.x"   # >=9.0.200 lê/builda o formato .slnx
       # (2) Cache do NuGet (não precisa de lock file).
       - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
-      - run: dotnet test tests/Template.Plugins.Tests --configuration Release
+      - run: dotnet build Template.Plugins.slnx --configuration Release
+      - run: dotnet test tests/Template.Plugins.Tests --configuration Release --no-build
 
   testes-typescript:
     needs: changes

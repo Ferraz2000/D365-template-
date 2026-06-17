@@ -27,10 +27,25 @@
         "**/package-lock.json",
         "**/*.user",
         ".git/**",
+        ".vs/**",
         ".template.config/**",
         "Template.Pack.*",
-        "nupkg/**"
-      ]
+        "nupkg/**",
+        "TEMPLATE.md",
+        "LICENSE",
+        "CONTRIBUTING.md",
+        ".github/workflows/release.yml",
+        "README.md",
+        "docs/brain/**",
+        "seed/**"
+      ],
+      "rename": {
+        "README.project.md": "README.md"
+      }
+    },
+    {
+      "source": "seed/brain/",
+      "target": "docs/brain/"
     }
   ]
 }

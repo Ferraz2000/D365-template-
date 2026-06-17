@@ -27,6 +27,9 @@ import sqlite3
 from pathlib import Path
 
 from . import config as _config
+from . import semantic as _semantic
+from .mdutil import iter_vault_md
+from .mdutil import title_of as extract_title  # back-compat alias
 
 _SCHEMA_VERSION = 1
 INDEX_BASENAME = "vault-index.sqlite3"
@@ -56,16 +59,6 @@ def fts5_available():
 # --------------------------------------------------------------------------
 # Extraction helpers (pure)
 # --------------------------------------------------------------------------
-
-def extract_title(text, fallback):
-    for line in text.splitlines():
-        line = line.strip()
-        if line.startswith("title:"):
-            return line[len("title:"):].strip().strip("'\"")
-        if line.startswith("# "):
-            return line[2:].strip()
-    return fallback
-
 
 def extract_links(text, note_relpath, repo_root):
     """Repo-relative .md targets referenced by ``note_relpath`` that exist on disk.
@@ -146,18 +139,6 @@ def _ensure_schema(con):
         con.commit()
 
 
-def _iter_md(cfg, dirs):
-    vault = cfg.vault_root
-    for d in dirs:
-        root = vault / d
-        if not root.is_dir():
-            continue
-        for dirpath, _sub, files in os.walk(root):
-            for fname in sorted(files):
-                if fname.endswith(".md"):
-                    yield os.path.join(dirpath, fname)
-
-
 def refresh(con, cfg, dirs=None):
     """Incrementally bring the index in sync with disk. Returns count reindexed."""
     dirs = dirs or cfg.search_dirs
@@ -165,11 +146,13 @@ def refresh(con, cfg, dirs=None):
     _ensure_schema(con)
     seen = set()
     reindexed = 0
+    embed_items = []   # (relpath, text) of (re)indexed notes for the [semantic] tier
+    forget_paths = []  # relpaths pruned from disk, to drop from the vector store
     known = {
         row[0]: (row[1], row[2], row[3])
         for row in con.execute("SELECT path, mtime_ns, size, rowid_ref FROM files")
     }
-    for path in _iter_md(cfg, dirs):
+    for path in iter_vault_md(cfg, dirs):
         seen.add(path)
         try:
             st = os.stat(path)
@@ -200,6 +183,7 @@ def refresh(con, cfg, dirs=None):
         )
         for dst in extract_links(text, relpath, repo_root):
             con.execute("INSERT INTO edges(src, dst) VALUES(?,?)", (relpath, dst))
+        embed_items.append((relpath, text))
         reindexed += 1
     # Prune files that vanished from disk.
     for path, meta in known.items():
@@ -208,8 +192,16 @@ def refresh(con, cfg, dirs=None):
             relrow = con.execute("SELECT relpath FROM files WHERE path=?", (path,)).fetchone()
             if relrow:
                 con.execute("DELETE FROM edges WHERE src=?", (relrow[0],))
+                forget_paths.append(relrow[0])
             con.execute("DELETE FROM files WHERE path=?", (path,))
     con.commit()
+    # Mirror the same delta into the optional vector store (no-op unless the
+    # [semantic] tier is available). Best-effort: never let it break indexing.
+    try:
+        _semantic.reindex(cfg, embed_items)
+        _semantic.forget(cfg, forget_paths)
+    except Exception:
+        pass
     return reindexed
 
 
@@ -270,7 +262,16 @@ def search(query, cfg=None, top=8, dirs=None, rrf=True):
                 neigh[nb] = neigh.get(nb, 0.0) + 1.0 / (60 + rank + 1)
         neigh_list = sorted(neigh, key=lambda d: neigh[d], reverse=True)
 
-        ordered, scores = rrf_fuse([fts, neigh_list])
+        rank_lists = [fts, neigh_list]
+        # [semantic] tier: fuse a local-embedding vector ranking when available
+        # (off ⇒ this is empty and RRF degenerates to today's FTS+graph result).
+        if _semantic.available(cfg):
+            vec = [rp for rp in _semantic.rank(query, cfg, limit=top * 5)
+                   if not prefixes or rp.startswith(prefixes)]
+            if vec:
+                rank_lists.append(vec)
+
+        ordered, scores = rrf_fuse(rank_lists)
         return [(rp, scores[rp]) for rp in ordered][:top]
     finally:
         con.close()

@@ -46,9 +46,9 @@ não conhecem `Plugins`.
 - Sugestão: **proteger** `main` e a pasta do vault (`docs/brain/`) com review obrigatório.
 - **Doc-sync (advisory)**: mudou `src/plugins/**` ou `src/webresources/**`? Atualize o
   doc correspondente em `docs/architecture/` no mesmo commit. O gate **avisa mas não
-  bloqueia** (`doc_sync_enforce = false`) — norma para **agentes**; o dev humano não
-  trava. Integridade real (`doc_links`/`vault_sync`: link morto, proveniência quebrada)
-  **continua** bloqueando push/PR.
+  bloqueia** (`[enforcement] pre_commit = "warn"`) — norma para **agentes**; o dev humano
+  não trava. Integridade real (`doc_links`/`vault_sync`: link morto, proveniência quebrada)
+  **continua** bloqueando push/PR (`pre_push`/`ci = "block"`).
 
 ## Memória (hipocampo)
 - `/capture <algo>` — propõe nota para curadoria humana antes de virar conhecimento.
