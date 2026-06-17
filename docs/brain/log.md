@@ -11,6 +11,12 @@ Formato: `## [AAAA-MM-DD] <tipo> | <título>` e uma linha opcional com links.
 Gravado raw/sources/2026-06-12-....md; tocou knowledge/meta/....md.
 -->
 
+## [2026-06-17] capture | Doc-sync enforcement via [enforcement] por ponto (não flag global)
+Ver knowledge/meta/doc-sync-enforcement-gate.md. Kit hipocampo 0.8.3→0.9.1; migrou hack doc_sync_enforce.
+
+## [2026-06-17] capture | Geração do template usa seed-dir (vault real intacto)
+Ver knowledge/meta/template-seed-dir-generation.md. seed/brain→docs/brain curado e auto-consistente.
+
 ## [2026-06-14] decisão | Template D365 CE: vertical slice (Screaming), PT/EN, sem interfaces
 Decisões registradas em adrs/0001..0005 e knowledge/{architecture,plugins,webresources,alm,meta}.
 Fonte: raw/sources/2026-06-14-sessao-decisoes.md.
