@@ -11,6 +11,9 @@ Formato: `## [AAAA-MM-DD] <tipo> | <título>` e uma linha opcional com links.
 Gravado raw/sources/2026-06-12-....md; tocou knowledge/meta/....md.
 -->
 
+## [2026-06-17] capture | Publicação do template no nuget.org via Trusted Publishing (OIDC, keyless)
+Ver knowledge/meta/publicacao-nuget-trusted-publishing.md. release.yml + NuGet/login@v1 + policy nuget.org.
+
 ## [2026-06-17] capture | Doc-sync enforcement via [enforcement] por ponto (não flag global)
 Ver knowledge/meta/doc-sync-enforcement-gate.md. Kit hipocampo 0.8.3→0.9.1; migrou hack doc_sync_enforce.
 

@@ -19,6 +19,7 @@ tags: [knowledge, index, navigation]
 - [template-reutilizavel](meta/template-reutilizavel.md) — dotnet new + prefixo centralizado + GitHub Template; MIT/público; não injeta plugins. Fontes: sessao-decisoes.
 - [doc-sync-enforcement-gate](meta/doc-sync-enforcement-gate.md) — doc-sync via `[enforcement]` por ponto (pre_commit=warn advisory; pre_push/ci=block integridade). Fontes: inferido.
 - [template-seed-dir-generation](meta/template-seed-dir-generation.md) — geração mapeia seed/brain→docs/brain (curado, auto-consistente); vault real intacto. Fontes: inferido.
+- [publicacao-nuget-trusted-publishing](meta/publicacao-nuget-trusted-publishing.md) — publica no nuget.org via Trusted Publishing (OIDC, keyless); release.yml + policy + NUGET_USER. Fontes: inferido.
 
 ## architecture
 - [vertical-slice-screaming](architecture/vertical-slice-screaming.md) — assembly por feature (namespace = feature) + regra de dependência. Fontes: sessao-decisoes, padroes-plugin.
